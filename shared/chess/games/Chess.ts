@@ -15,8 +15,7 @@ import { TwoPlayerChessboard } from "../chessboards/TwoPlayerChessboard";
 import { FourPlayerChessboard } from "../chessboards/FourPlayerChessboard";
 import type { Piece } from "../pieces/Piece";
 
-const isChessVariant = (variant: string) =>
-    Object.values(ChessVariant).includes(variant.toLowerCase() as ChessVariant);
+const isChessVariant = (variant: string) => Object.values(ChessVariant).includes(variant.toLowerCase() as ChessVariant);
 
 export class Chess {
     static TwoPlayerChessboardPosition: string =
@@ -53,8 +52,16 @@ export class Chess {
 
         this.players =
             variant === ChessVariant.FourPlayer
-                ? [new Player(PlayerColor.White, "Whites", Direction.Up), new Player(PlayerColor.Silver, "Silvers", Direction.Right), new Player(PlayerColor.Black, "Blacks", Direction.Down), new Player(PlayerColor.Gold, "Golds", Direction.Left)]
-                : [new Player(PlayerColor.White, "Whites", Direction.Up), new Player(PlayerColor.Black, "Blacks", Direction.Down)];
+                ? [
+                      new Player(PlayerColor.White, "Whites", Direction.Up),
+                      new Player(PlayerColor.Silver, "Silvers", Direction.Right),
+                      new Player(PlayerColor.Black, "Blacks", Direction.Down),
+                      new Player(PlayerColor.Gold, "Golds", Direction.Left),
+                  ]
+                : [
+                      new Player(PlayerColor.White, "Whites", Direction.Up),
+                      new Player(PlayerColor.Black, "Blacks", Direction.Down),
+                  ];
 
         if (!position) {
             position =
@@ -80,9 +87,7 @@ export class Chess {
             const piece = square.piece;
             if (piece !== null) {
                 if (piece.getName() === PieceName.King) {
-                    const player: Player | undefined = this.players.find(
-                        (player) => player.color === piece.color
-                    );
+                    const player: Player | undefined = this.players.find((player) => player.color === piece.color);
 
                     if (player) {
                         if (player.kingSquare !== null) {
@@ -115,8 +120,7 @@ export class Chess {
     }
 
     setPreviousPlayer(): void {
-        this.activePlayerIndex =
-            (this.activePlayerIndex - 1 + this.players.length) % this.players.length;
+        this.activePlayerIndex = (this.activePlayerIndex - 1 + this.players.length) % this.players.length;
     }
 
     setLegalMoves(): void {
@@ -151,9 +155,7 @@ export class Chess {
     }
 
     getLegalMove(fromSquareName: string, toSquareName: string): Move | null {
-        return this.isLegalMove(fromSquareName, toSquareName)
-            ? this.legalMoves[fromSquareName][toSquareName]
-            : null;
+        return this.isLegalMove(fromSquareName, toSquareName) ? this.legalMoves[fromSquareName][toSquareName] : null;
     }
 
     getHalfmove(moveIndex: number): SerializedMove | null {

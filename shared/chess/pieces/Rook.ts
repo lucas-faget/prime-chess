@@ -5,12 +5,7 @@ import { PieceName } from "../types/PieceName";
 import { MobilePiece } from "./MobilePiece";
 
 export class Rook extends MobilePiece {
-    static Directions: Coordinates[] = [
-        Direction.Up,
-        Direction.Right,
-        Direction.Down,
-        Direction.Left,
-    ];
+    static Directions: Coordinates[] = [Direction.Up, Direction.Right, Direction.Down, Direction.Left];
 
     constructor(color: PlayerColor) {
         super(color);

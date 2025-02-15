@@ -55,12 +55,7 @@ const items = ref([
 
             <Menu :model="items" class="!border-0 !bg-transparent">
                 <template #item="{ item, props }">
-                    <router-link
-                        v-if="item.route"
-                        v-slot="{ href, navigate }"
-                        :to="item.route"
-                        custom
-                    >
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
                         <a v-ripple :href="href" v-bind="props.action" @click="navigate">
                             <span :class="item.icon" />
                             <span>{{ item.label }}</span>
@@ -75,20 +70,8 @@ const items = ref([
         </div>
         <div class="flex flex-col mt-4">
             <div class="flex flex-col gap-3">
-                <Button
-                    type="button"
-                    label="Log in"
-                    severity="secondary"
-                    icon="pi pi-user"
-                    iconPos="left"
-                ></Button>
-                <Button
-                    type="button"
-                    label="Sign up"
-                    severity="contrast"
-                    icon="pi pi-sign-in"
-                    iconPos="left"
-                ></Button>
+                <Button type="button" label="Log in" severity="secondary" icon="pi pi-user" iconPos="left"></Button>
+                <Button type="button" label="Sign up" severity="contrast" icon="pi pi-sign-in" iconPos="left"></Button>
             </div>
 
             <Divider />

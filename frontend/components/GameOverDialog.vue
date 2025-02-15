@@ -29,13 +29,7 @@ watch(
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        modal
-        header="Game over"
-        :style="{ width: 'min(100vw,46rem)' }"
-        class="app-font"
-    >
+    <Dialog v-model:visible="visible" modal header="Game over" :style="{ width: 'min(100vw,46rem)' }" class="app-font">
         <div class="flex flex-col gap-4">
             <div class="relative">
                 <img src="/images/game_over.png" alt="Image" class="relative w-full blur-sm" />
@@ -44,9 +38,7 @@ watch(
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col text-center">
                             <template v-if="winnerPlayerIndex !== undefined">
-                                <span class="text-2xl font-medium">
-                                    {{ players[winnerPlayerIndex].name }} won
-                                </span>
+                                <span class="text-2xl font-medium"> {{ players[winnerPlayerIndex].name }} won </span>
                                 <span class="text-lg text-muted-color">by checkmate</span>
                             </template>
 
@@ -56,11 +48,7 @@ watch(
                             </template>
                         </div>
 
-                        <GameResult
-                            :players="players"
-                            :gameOver="gameOver"
-                            :winnerPlayerIndex="winnerPlayerIndex"
-                        />
+                        <GameResult :players="players" :gameOver="gameOver" :winnerPlayerIndex="winnerPlayerIndex" />
                     </div>
                 </div>
             </div>

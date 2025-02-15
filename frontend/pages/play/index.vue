@@ -25,9 +25,7 @@ function handleMove(fromSquareName: string, toSquareName: string): void {
 <template>
     <div class="w-full flex max-lg:flex-col">
         <div class="w-full h-full flex justify-center">
-            <div
-                class="w-full max-w-[calc(100vh-2*var(--chessboard-head-h))] min-w-[20rem] flex flex-col p-2"
-            >
+            <div class="w-full max-w-[calc(100vh-2*var(--chessboard-head-h))] min-w-[20rem] flex flex-col p-2">
                 <div class="h-[var(--chessboard-head-h)] flex items-start shrink-0">
                     <Player :player="topPlayer" />
                 </div>

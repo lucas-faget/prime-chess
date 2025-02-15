@@ -1,13 +1,7 @@
 import { defineStore } from "pinia";
 import { useSettings } from "~/composables/useSettings";
 import { Chess } from "@shared/chess/games/Chess.ts";
-import {
-    type VPlayer,
-    type VPiece,
-    type VMove,
-    type VLegalMoves,
-    VChessboard,
-} from "~/types";
+import { type VPlayer, type VPiece, type VMove, type VLegalMoves, VChessboard } from "~/types";
 import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
 
 const { isChessboardSpinAutomatic } = useSettings();
@@ -65,9 +59,7 @@ export const useChessStore = defineStore("chess", {
             return this.chess?.getCheckedSquare() ?? null;
         },
         checkLegalMove(fromSquareName: string, toSquareName: string): boolean {
-            return (
-                fromSquareName in this.legalMoves && toSquareName in this.legalMoves[fromSquareName]
-            );
+            return fromSquareName in this.legalMoves && toSquareName in this.legalMoves[fromSquareName];
         },
         getLegalMove(fromSquareName: string, toSquareName: string): VMove | null {
             return this.chess?.getLegalMove(fromSquareName, toSquareName)?.serialize() ?? null;
@@ -95,8 +87,7 @@ export const useChessStore = defineStore("chess", {
                     this.checkmatePiece = this.chess.checkmatePiece?.serialize() ?? undefined;
                     if (this.checkmatePiece) {
                         this.winnerPlayerIndex = this.players.findIndex(
-                            (player) =>
-                                this.checkmatePiece && player.color === this.checkmatePiece.color
+                            (player) => this.checkmatePiece && player.color === this.checkmatePiece.color
                         );
                     }
                 }

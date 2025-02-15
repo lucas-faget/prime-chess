@@ -16,12 +16,7 @@ withDefaults(
 
 <template>
     <div class="flex flex-col">
-        <GameResult
-            class="py-8"
-            :players="players"
-            :gameOver="gameOver"
-            :winnerPlayerIndex="winnerPlayerIndex"
-        />
+        <GameResult class="py-8" :players="players" :gameOver="gameOver" :winnerPlayerIndex="winnerPlayerIndex" />
 
         <Divider />
 

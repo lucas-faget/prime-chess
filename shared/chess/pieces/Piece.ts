@@ -24,12 +24,7 @@ export abstract class Piece {
 
     abstract getName(): PieceName;
 
-    abstract getMoves(
-        player: Player,
-        square: Square,
-        chessboard: Chessboard,
-        enPassantTarget: string | null
-    ): Move[];
+    abstract getMoves(player: Player, square: Square, chessboard: Chessboard, enPassantTarget: string | null): Move[];
 
     serialize(): SerializedPiece {
         return {

@@ -34,10 +34,7 @@ export class Knight extends Piece {
                     let move: Move = new Move(fromSquare, toSquare);
                     moves.push(move);
                 } else {
-                    if (
-                        !toSquare.isOccupiedByAlly(player.color) &&
-                        !toSquare.isOccupiedByPieceName(PieceName.King)
-                    ) {
+                    if (!toSquare.isOccupiedByAlly(player.color) && !toSquare.isOccupiedByPieceName(PieceName.King)) {
                         let move: Move = new Capture(fromSquare, toSquare, toSquare.piece);
                         moves.push(move);
                     }

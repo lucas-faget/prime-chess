@@ -27,8 +27,7 @@ const colorClassNames = ref([
 
 const defaultSettings = {
     darkMode: true,
-    chessboardColor:
-        colorClassNames.value.find((color) => color.name === "blue") ?? colorClassNames.value[0],
+    chessboardColor: colorClassNames.value.find((color) => color.name === "blue") ?? colorClassNames.value[0],
     chessboardSpin: false,
 };
 

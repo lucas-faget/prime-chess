@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { useSettings } from "~/composables/useSettings";
-const {
-    getColors,
-    getChessboardColor,
-    setChessboardColor,
-    isChessboardSpinAutomatic,
-    toggleChessboardSpin,
-} = useSettings();
+const { getColors, getChessboardColor, setChessboardColor, isChessboardSpinAutomatic, toggleChessboardSpin } =
+    useSettings();
 
 withDefaults(
     defineProps<{

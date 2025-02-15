@@ -14,10 +14,8 @@ import { Piece } from "../pieces/Piece";
 import type { Chess } from "../games/Chess";
 
 const isInteger = (char: string) => !isNaN(parseInt(char));
-const isPlayerColor = (char: string) =>
-    Object.values(PlayerColor).includes(char.toLowerCase() as PlayerColor);
-const isPieceName = (char: string) =>
-    Object.values(PieceName).includes(char.toLowerCase() as PieceName);
+const isPlayerColor = (char: string) => Object.values(PlayerColor).includes(char.toLowerCase() as PlayerColor);
+const isPieceName = (char: string) => Object.values(PieceName).includes(char.toLowerCase() as PieceName);
 
 export abstract class Chessboard {
     static Regex = /([a-zA-Z]{2}|\d+)/g;
@@ -52,18 +50,10 @@ export abstract class Chessboard {
                     if (isInteger(segment)) {
                         x += parseInt(segment);
                     } else {
-                        if (
-                            segment.length === 2 &&
-                            isPlayerColor(segment[0]) &&
-                            isPieceName(segment[1])
-                        ) {
-                            const playerColor: PlayerColor =
-                                segment[0].toLowerCase() as PlayerColor;
+                        if (segment.length === 2 && isPlayerColor(segment[0]) && isPieceName(segment[1])) {
+                            const playerColor: PlayerColor = segment[0].toLowerCase() as PlayerColor;
                             const pieceName: PieceName = segment[1].toLowerCase() as PieceName;
-                            this.getSquareByName(this.files[x] + this.ranks[y])?.setPiece(
-                                pieceName,
-                                playerColor
-                            );
+                            this.getSquareByName(this.files[x] + this.ranks[y])?.setPiece(pieceName, playerColor);
                         }
                         x++;
                     }
@@ -77,12 +67,7 @@ export abstract class Chessboard {
     }
 
     getSquareByPosition(position: Coordinates): Square | null {
-        if (
-            position.x < 0 ||
-            position.y < 0 ||
-            position.x >= this.files.length ||
-            position.y >= this.ranks.length
-        ) {
+        if (position.x < 0 || position.y < 0 || position.x >= this.files.length || position.y >= this.ranks.length) {
             return null;
         }
 

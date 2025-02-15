@@ -20,12 +20,7 @@ export class Pawn extends Piece {
         return PieceName.Pawn;
     }
 
-    getMoves(
-        player: Player,
-        fromSquare: Square,
-        chessboard: Chessboard,
-        enPassantTarget: string | null
-    ): Move[] {
+    getMoves(player: Player, fromSquare: Square, chessboard: Chessboard, enPassantTarget: string | null): Move[] {
         let moves: Move[] = [];
         let toSquare: Square | null = fromSquare;
 
@@ -66,10 +61,7 @@ export class Pawn extends Piece {
             }
         }
 
-        return [
-            ...moves,
-            ...this.getEnPassantCapture(player, fromSquare, chessboard, enPassantTarget),
-        ];
+        return [...moves, ...this.getEnPassantCapture(player, fromSquare, chessboard, enPassantTarget)];
     }
 
     getEnPassantCapture(
@@ -87,10 +79,7 @@ export class Pawn extends Piece {
             for (const direction of player.enPassantCaptureDirections) {
                 enPassantTargetSquare = chessboard.getSquareByDirection(fromSquare, direction);
                 if (enPassantTargetSquare?.name === enPassantTarget) {
-                    toSquare = chessboard.getSquareByDirection(
-                        enPassantTargetSquare,
-                        player.direction
-                    );
+                    toSquare = chessboard.getSquareByDirection(enPassantTargetSquare, player.direction);
                     if (toSquare && toSquare.isEmpty()) {
                         let move: Move = new EnPassantCapture(
                             fromSquare,
@@ -109,9 +98,7 @@ export class Pawn extends Piece {
 
     static getCaptureDirections(direction: Coordinates): Coordinates[] {
         if (direction.x === 0 && direction.y !== 0) {
-            return direction.y > 0
-                ? [Direction.UpLeft, Direction.UpRight]
-                : [Direction.DownLeft, Direction.DownRight];
+            return direction.y > 0 ? [Direction.UpLeft, Direction.UpRight] : [Direction.DownLeft, Direction.DownRight];
         } else {
             if (direction.y === 0 && direction.x !== 0) {
                 return direction.x > 0
@@ -135,15 +122,10 @@ export class Pawn extends Piece {
         return [];
     }
 
-    static isStartingPosition(
-        position: Coordinates,
-        direction: Coordinates,
-        chessboard: Chessboard
-    ): boolean {
+    static isStartingPosition(position: Coordinates, direction: Coordinates, chessboard: Chessboard): boolean {
         if (direction.x === 0 && direction.y !== 0) {
             return (
-                (direction.y > 0 && position.y === 1) ||
-                (direction.y < 0 && position.y === chessboard.ranks.length - 2)
+                (direction.y > 0 && position.y === 1) || (direction.y < 0 && position.y === chessboard.ranks.length - 2)
             );
         } else {
             if (direction.y === 0 && direction.x !== 0) {

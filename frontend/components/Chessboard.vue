@@ -27,16 +27,13 @@ const fromSquareName = ref<string | null>(null);
 
 const isPerpendicular = computed(
     () =>
-        (props.variant === ChessVariant.FourPlayer && props.playerInFrontIndex === 1) ||
-        props.playerInFrontIndex === 3
+        (props.variant === ChessVariant.FourPlayer && props.playerInFrontIndex === 1) || props.playerInFrontIndex === 3
 );
 
 const rows = computed(() => {
     switch (props.playerInFrontIndex) {
         case 1:
-            return props.variant === ChessVariant.FourPlayer
-                ? props.chessboard.reversedFiles
-                : props.chessboard.ranks;
+            return props.variant === ChessVariant.FourPlayer ? props.chessboard.reversedFiles : props.chessboard.ranks;
         case 2:
             return props.chessboard.ranks;
         case 3:
@@ -65,20 +62,14 @@ const columns = computed(() => {
 
 const gridStyle = computed(() => {
     return {
-        gridTemplateColumns: `repeat(${props.chessboard.files.length}, ${
-            100 / props.chessboard.files.length
-        }%)`,
-        gridTemplateRows: `repeat(${props.chessboard.ranks.length}, ${
-            100 / props.chessboard.ranks.length
-        }%)`,
+        gridTemplateColumns: `repeat(${props.chessboard.files.length}, ${100 / props.chessboard.files.length}%)`,
+        gridTemplateRows: `repeat(${props.chessboard.ranks.length}, ${100 / props.chessboard.ranks.length}%)`,
     };
 });
 
-const getSquareName = (column: string, row: string): string =>
-    isPerpendicular.value ? row + column : column + row;
+const getSquareName = (column: string, row: string): string => (isPerpendicular.value ? row + column : column + row);
 
-const isDarkSquare = (x: number, y: number): boolean =>
-    isPerpendicular.value ? (x + y) % 2 === 0 : (x + y) % 2 !== 0;
+const isDarkSquare = (x: number, y: number): boolean => (isPerpendicular.value ? (x + y) % 2 === 0 : (x + y) % 2 !== 0);
 
 const isActiveSquare = (squareName: string): boolean =>
     props.activeMove !== null &&

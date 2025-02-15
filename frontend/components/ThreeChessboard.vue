@@ -54,12 +54,7 @@ const init = () => {
     selectMaterial.value = new THREE.MeshStandardMaterial({ color: selectColor });
     legalMaterial.value = new THREE.MeshStandardMaterial({ color: legalColor });
 
-    camera.value = new THREE.PerspectiveCamera(
-        fov,
-        window.innerWidth / window.innerHeight,
-        near,
-        far
-    );
+    camera.value = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
     renderer.value = new THREE.WebGLRenderer({ antialias: true, alpha: true, precision: "lowp" });
     controls.value = new OrbitControls(camera.value, renderer.value.domElement);
     raycaster.value = new THREE.Raycaster();
@@ -144,12 +139,9 @@ const loadChessboard = () => {
                     const squareName = file + rank;
                     const piece = props.chessboard.squares.get(squareName);
                     if (piece) {
-                        const material =
-                            piece.color === "w" ? whiteMaterial.value : blackMaterial.value;
-                        const x =
-                            squareSize * (fileIndex - props.chessboard.files.length / 2 + 0.5);
-                        const z =
-                            squareSize * (rankIndex - props.chessboard.ranks.length / 2 + 0.5);
+                        const material = piece.color === "w" ? whiteMaterial.value : blackMaterial.value;
+                        const x = squareSize * (fileIndex - props.chessboard.files.length / 2 + 0.5);
+                        const z = squareSize * (rankIndex - props.chessboard.ranks.length / 2 + 0.5);
 
                         let object;
                         switch (piece.name) {
@@ -323,10 +315,7 @@ const handleMouseMove = (event) => {
     }
 
     removeHoveredObject();
-    if (
-        object !== undefined &&
-        !(selectedPiece.value !== null && selectedPiece.value.uuid === object.uuid)
-    ) {
+    if (object !== undefined && !(selectedPiece.value !== null && selectedPiece.value.uuid === object.uuid)) {
         hoverObject(object);
     }
 
@@ -372,10 +361,7 @@ const handleMouseClick = (event) => {
                 unselectPiece();
             }
         } else {
-            const piece =
-                object.userData?.type === "piece"
-                    ? object
-                    : pieceGroup.getObjectByName(object.name);
+            const piece = object.userData?.type === "piece" ? object : pieceGroup.getObjectByName(object.name);
             if (piece !== undefined) {
                 if (hasLegalMove(object.name)) {
                     selectPiece(piece);

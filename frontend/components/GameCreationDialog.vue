@@ -110,12 +110,7 @@ defineExpose({
             <div class="flex flex-col gap-4">
                 <span class="text-surface-500 dark:text-surface-400"> Select your opponent. </span>
 
-                <Listbox
-                    v-model="selectedOpponent"
-                    :options="opponents"
-                    optionLabel="name"
-                    class="w-48 max-sm:w-full"
-                >
+                <Listbox v-model="selectedOpponent" :options="opponents" optionLabel="name" class="w-48 max-sm:w-full">
                     <template #option="slotProps">
                         <div class="flex items-center gap-2">
                             <i :class="`pi ${slotProps.option.icon}`"></i>
