@@ -1,4 +1,4 @@
-import type { CastlingSide } from "../types/CastlingSides";
+import type { CastlingSide } from "../types/CastlingSide";
 import type { Square } from "../squares/Square";
 import { Move } from "./Move";
 

@@ -4,8 +4,6 @@ import type { VPiece } from "./Piece";
 const isInteger = (char: string) => !isNaN(parseInt(char));
 
 export class VChessboard {
-    static Regex = /([a-zA-Z]{2}|\d+)/g;
-
     ranks: string[];
     files: string[];
     reversedRanks: string[];
@@ -34,19 +32,16 @@ export class VChessboard {
             const rows = position.split("/");
             for (const [y, row] of rows.reverse().entries()) {
                 let x = 0;
-                const segments: string[] = row.match(VChessboard.Regex) || [];
-                for (const segment of segments) {
-                    if (isInteger(segment)) {
-                        x += parseInt(segment);
+                for (const char of row) {
+                    if (isInteger(char)) {
+                        x += parseInt(char);
                     } else {
-                        if (segment.length === 2) {
-                            const color: string = segment[0].toLowerCase();
-                            const name: string = segment[1].toLowerCase();
-                            this.squares.set(this.files[x] + this.ranks[y], {
-                                color: color,
-                                name: name,
-                            });
-                        }
+                        const color: string = char === char.toUpperCase() ? "w" : "b";
+                        const name: string = char.toLowerCase();
+                        this.squares.set(this.files[x] + this.ranks[y], {
+                            color: color,
+                            name: name,
+                        });
                         x++;
                     }
                 }

@@ -18,13 +18,11 @@ const isPlayerColor = (char: string) => Object.values(PlayerColor).includes(char
 const isPieceName = (char: string) => Object.values(PieceName).includes(char.toLowerCase() as PieceName);
 
 export abstract class Chessboard {
-    static Regex = /([a-zA-Z]{2}|\d+)/g;
-
     ranks: string[];
     files: string[];
     squares: Map<string, Square> = new Map();
 
-    constructor(ranks: string[], files: string[], position: string = "") {
+    constructor(ranks: string[], files: string[]) {
         this.ranks = ranks;
         this.files = files;
 
@@ -35,31 +33,9 @@ export abstract class Chessboard {
             }
         }
 
-        if (position) {
-            this.fill(position);
-        }
-    }
-
-    fill(position: string) {
-        if (position) {
-            const rows = position.split("/");
-            for (const [y, row] of rows.reverse().entries()) {
-                let x = 0;
-                const segments: string[] = row.match(Chessboard.Regex) || [];
-                for (const segment of segments) {
-                    if (isInteger(segment)) {
-                        x += parseInt(segment);
-                    } else {
-                        if (segment.length === 2 && isPlayerColor(segment[0]) && isPieceName(segment[1])) {
-                            const playerColor: PlayerColor = segment[0].toLowerCase() as PlayerColor;
-                            const pieceName: PieceName = segment[1].toLowerCase() as PieceName;
-                            this.getSquareByName(this.files[x] + this.ranks[y])?.setPiece(pieceName, playerColor);
-                        }
-                        x++;
-                    }
-                }
-            }
-        }
+        // if (position) {
+        //     this.fill(position);
+        // }
     }
 
     getSquareByName(squareName: string): Square | null {
@@ -225,40 +201,5 @@ export abstract class Chessboard {
         }
 
         return false;
-    }
-
-    toString(): string {
-        const rows: string[] = [];
-
-        for (const rank of this.ranks) {
-            let row = "";
-            let emptySquareCount = 0;
-
-            for (const file of this.files) {
-                const square = this.getSquareByName(file + rank);
-
-                if (square?.isEmpty()) {
-                    emptySquareCount++;
-                } else {
-                    if (emptySquareCount > 0) {
-                        row += emptySquareCount.toString();
-                        emptySquareCount = 0;
-                    }
-                    if (square?.piece) {
-                        const playerColor = square.piece.color.toLowerCase();
-                        const pieceName = square.piece.getName().toUpperCase();
-                        row += playerColor + pieceName;
-                    }
-                }
-            }
-
-            if (emptySquareCount > 0) {
-                row += emptySquareCount.toString();
-            }
-
-            rows.push(row);
-        }
-
-        return rows.reverse().join("/");
     }
 }

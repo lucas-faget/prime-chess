@@ -9,7 +9,6 @@ import type { SerializedMove } from "../serialization/SerializedMove";
 import type { MoveState } from "../types/MoveState";
 import type { LegalMoves } from "../types/LegalMoves";
 import type { SerializedLegalMoves } from "../serialization/SerializedLegalMoves";
-import type { ChessboardState } from "../types/ChessboardState";
 import type { Chessboard } from "../chessboards/Chessboard";
 import { TwoPlayerChessboard } from "../chessboards/TwoPlayerChessboard";
 import { FourPlayerChessboard } from "../chessboards/FourPlayerChessboard";
@@ -18,36 +17,19 @@ import type { Piece } from "../pieces/Piece";
 const isChessVariant = (variant: string) => Object.values(ChessVariant).includes(variant.toLowerCase() as ChessVariant);
 
 export class Chess {
-    static TwoPlayerChessboardPosition: string =
-        "bRbNbBbQbKbBbNbR/bPbPbPbPbPbPbPbP/8/8/8/8/wPwPwPwPwPwPwPwP/wRwNwBwQwKwBwNwR";
-    static FourPlayerChessboardPosition: string =
-        "3bRbNbBbKbQbBbNbR3/" +
-        "3bPbPbPbPbPbPbPbP3/" +
-        "14/" +
-        "sRsP10gPgR/" +
-        "sNsP10gPgN/" +
-        "sBsP10gPgB/" +
-        "sQsP10gPgK/" +
-        "sKsP10gPgQ/" +
-        "sBsP10gPgB/" +
-        "sNsP10gPgN/" +
-        "sRsP10gPgR/" +
-        "14/" +
-        "3wPwPwPwPwPwPwPwP3/" +
-        "3wRwNwBwQwKwBwNwR3";
-
     variant: ChessVariant;
     players: Player[];
     activePlayerIndex: number = 0;
     chessboard: Chessboard;
     legalMoves: LegalMoves = {};
-    chessboardHistory: ChessboardState[] = [];
+    enPassantTarget: string | null = null;
+    fenHistory: string[] = [];
     moveHistory: MoveState[] = [];
     isActivePlayerChecked: boolean = false;
     gameOver: boolean = false;
     checkmatePiece: Piece | undefined = undefined;
 
-    constructor(variant: string = "", position: string = "") {
+    constructor(variant: string = "", fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {
         this.variant = isChessVariant(variant) ? (variant as ChessVariant) : ChessVariant.Standard;
 
         this.players =
@@ -63,21 +45,16 @@ export class Chess {
                       new Player(PlayerColor.Black, "Blacks", Direction.Down),
                   ];
 
-        if (!position) {
-            position =
-                variant === ChessVariant.FourPlayer
-                    ? Chess.FourPlayerChessboardPosition
-                    : Chess.TwoPlayerChessboardPosition;
-        }
-
         this.chessboard =
             variant === ChessVariant.FourPlayer
-                ? new FourPlayerChessboard(position)
-                : new TwoPlayerChessboard(position);
+                ? new FourPlayerChessboard()
+                : new TwoPlayerChessboard(fenString.split(" ")[0]);
 
         this.setKingSquares();
 
-        this.addPositionToHistory(position);
+        this.fenHistory.push(fenString);
+
+        console.log(this.fenHistory[this.fenHistory.length - 1]);
 
         this.setLegalMoves();
     }
@@ -126,10 +103,7 @@ export class Chess {
     setLegalMoves(): void {
         const player: Player = this.getActivePlayer();
         if (player.kingSquare !== null) {
-            const enPassantTarget: string | null =
-                this.chessboardHistory[this.chessboardHistory.length - 1].enPassantTarget;
-
-            this.legalMoves = this.chessboard.calculateLegalMoves(player, enPassantTarget, this);
+            this.legalMoves = this.chessboard.calculateLegalMoves(player, this.enPassantTarget, this);
         }
     }
 
@@ -168,11 +142,11 @@ export class Chess {
         return this.moveHistory.map((moveState) => moveState.algebraic);
     }
 
-    getChessboardPositionByIndex(moveIndex: number = this.chessboardHistory.length - 1): string {
-        if (moveIndex >= 0 && moveIndex < this.chessboardHistory.length) {
-            return this.chessboardHistory[moveIndex].position;
+    getChessboardPositionByIndex(moveIndex: number = this.fenHistory.length - 1): string {
+        if (moveIndex >= 0 && moveIndex < this.fenHistory.length) {
+            return this.fenHistory[moveIndex].split(" ")[0];
         } else {
-            return this.chessboardHistory[this.chessboardHistory.length - 1].position;
+            return this.fenHistory[this.fenHistory.length - 1].split(" ")[0];
         }
     }
 
@@ -195,14 +169,24 @@ export class Chess {
         }
     }
 
-    addPositionToHistory(position: string, enPassantTarget: string | null = null) {
-        this.chessboardHistory.push({
-            position,
-            enPassantTarget,
-        });
+    storePosition(move: Move) {
+        const position: string = this.chessboard.toString();
+        const activePlayer: string = this.getActivePlayer().color;
+        let castlingRights: string =
+            this.players[0].getCastlingRightString() + this.players[1].getCastlingRightString();
+        if (castlingRights.length === 0) {
+            castlingRights = "-";
+        }
+        const enPassantTarget: string = move.enPassantTarget ?? "-";
+        const halfmoveClock: number = 0;
+        const fullmoveNumber: number = Math.floor(1 + this.moveHistory.length / 2);
+
+        this.fenHistory.push(`${position} ${activePlayer} ${castlingRights} ${halfmoveClock} ${fullmoveNumber}`);
+
+        console.log(this.fenHistory[this.fenHistory.length - 1]);
     }
 
-    addMoveToHistory(move: Move) {
+    storeMove(move: Move) {
         this.moveHistory.push({
             move,
             serialized: move.serialize(),
@@ -230,10 +214,10 @@ export class Chess {
 
     performMove(move: Move): void {
         this.getActivePlayer().isChecked = false;
-        this.addMoveToHistory(move);
+        this.storeMove(move);
         this.move(move);
-        this.addPositionToHistory(this.chessboard.toString(), move.enPassantTarget);
         this.setNextPlayer();
+        this.storePosition(move);
         this.setLegalMoves();
         this.evaluateGameState();
     }
@@ -252,7 +236,7 @@ export class Chess {
 
     cancelLastMove(): SerializedMove | null {
         if (this.moveHistory.length > 0) {
-            this.chessboardHistory.pop();
+            this.fenHistory.pop();
             const moveState: any = this.moveHistory.pop();
             this.getActivePlayer().isChecked = false;
             this.undoMove(moveState.move);
