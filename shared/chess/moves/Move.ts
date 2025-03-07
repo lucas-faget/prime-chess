@@ -1,6 +1,7 @@
 import { PieceName } from "../types/PieceName";
 import type { Piece } from "../pieces/Piece";
 import type { Square } from "../squares/Square";
+import { MoveType } from "../types/MoveType";
 import type { SerializedMove } from "../serialization/SerializedMove";
 
 export class Move {
@@ -12,6 +13,10 @@ export class Move {
         this.fromSquare = fromSquare;
         this.toSquare = toSquare;
         this.enPassantTarget = null;
+    }
+
+    getType(): MoveType {
+        return MoveType.Move;
     }
 
     carryOutMove(): void {
@@ -26,10 +31,9 @@ export class Move {
 
     serialize(): SerializedMove {
         return {
+            algebraic: this.toString(),
             fromSquare: this.fromSquare.name,
             toSquare: this.toSquare.name,
-            captureSquare: null,
-            capturedPiece: null,
         };
     }
 

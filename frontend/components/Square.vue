@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { VPiece } from "@/types";
+import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
 import { useSettings } from "~/composables/useSettings";
 const { getChessboardColor } = useSettings();
 
 withDefaults(
     defineProps<{
         name?: string;
-        piece: VPiece | null;
+        piece: SerializedPiece | null;
         isDark: boolean;
         isLegal?: boolean;
         isActive?: boolean;

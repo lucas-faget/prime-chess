@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { type VPlayer } from "@/types";
+import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
 
 const props = withDefaults(
     defineProps<{
-        players: VPlayer[];
+        players: SerializedPiece[];
         gameOver?: boolean;
         winnerPlayerIndex?: number | undefined;
     }>(),

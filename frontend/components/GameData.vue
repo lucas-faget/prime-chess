@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { type VPlayer } from "@/types";
+import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
 
 withDefaults(
     defineProps<{
-        players: VPlayer[];
+        players: SerializedPlayer[];
         gameOver?: boolean;
         winnerPlayerIndex?: number | undefined;
     }>(),

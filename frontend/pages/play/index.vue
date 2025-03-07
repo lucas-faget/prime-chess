@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
 import { useChessStore } from "~/stores/chess";
-import { type VPlayer } from "@/types";
 
 definePageMeta({
     middleware: "game-exists",
@@ -9,11 +9,11 @@ definePageMeta({
 
 const chessStore = useChessStore();
 
-const bottomPlayer = computed<VPlayer>(() => {
+const bottomPlayer = computed<SerializedPlayer>(() => {
     return chessStore.players[chessStore.playerInFrontIndex];
 });
 
-const topPlayer = computed<VPlayer>(() => {
+const topPlayer = computed<SerializedPlayer>(() => {
     return chessStore.players[(chessStore.playerInFrontIndex + 1) % chessStore.players.length];
 });
 

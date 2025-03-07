@@ -1,4 +1,4 @@
-export type VPlayer = {
+export type SerializedPlayer = {
     name: string;
     color: string;
 };

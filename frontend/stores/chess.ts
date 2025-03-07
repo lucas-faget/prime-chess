@@ -1,8 +1,12 @@
 import { defineStore } from "pinia";
 import { useSettings } from "~/composables/useSettings";
-import { Chess } from "@shared/chess/games/Chess.ts";
-import { type VPlayer, type VPiece, type VMove, type VLegalMoves, VChessboard } from "~/types";
 import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
+import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
+import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
+import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
+import type { SerializedLegalMoves } from "@shared/chess/serialization/SerializedLegalMoves";
+import { TwoPlayerChessboard } from "@shared/chess/chessboards/TwoPlayerChessboard.ts";
+import { Chess } from "@shared/chess/games/Chess.ts";
 
 const { isChessboardSpinAutomatic } = useSettings();
 
@@ -10,16 +14,16 @@ export const useChessStore = defineStore("chess", {
     state: () => ({
         variant: null as ChessVariant | null,
         chess: null as Chess | null,
-        players: [] as VPlayer[],
+        players: [] as SerializedPlayer[],
         activePlayerIndex: 0,
         lastHalfmoveIndex: 0,
         activeHalfmoveIndex: 0,
         algebraicMoves: [] as string[],
-        legalMoves: {} as VLegalMoves,
-        chessboard: null as VChessboard | null,
+        legalMoves: {} as SerializedLegalMoves,
+        chessboard: null as TwoPlayerChessboard | null,
         playerInFrontIndex: 0,
         gameOver: false as boolean,
-        checkmatePiece: undefined as VPiece | undefined,
+        checkmatePiece: undefined as SerializedPiece | undefined,
         winnerPlayerIndex: undefined as number | undefined,
     }),
     getters: {
@@ -42,17 +46,13 @@ export const useChessStore = defineStore("chess", {
             this.lastHalfmoveIndex = 0;
             this.activeHalfmoveIndex = 0;
             this.legalMoves = this.chess.serializeLegalMoves();
-            this.chessboard = new VChessboard(
-                this.chess.chessboard.ranks,
-                this.chess.chessboard.files,
-                this.chess.getChessboardPositionByIndex(this.activeHalfmoveIndex)
-            );
+            this.chessboard = new TwoPlayerChessboard(this.chess.getFenPositionByIndex(this.activeHalfmoveIndex));
             this.playerInFrontIndex = this.activePlayerIndex;
         },
-        fillChessboard(position: string) {
-            this.chessboard?.fill(position);
+        fillChessboard(fenPosition: string) {
+            this.chessboard?.fill(fenPosition);
         },
-        getActiveMove(): VMove | null {
+        getActiveMove(): SerializedMove | null {
             return this.chess?.getHalfmove(this.activeHalfmoveIndex) ?? null;
         },
         getCheckedSquare(): string | null {
@@ -61,18 +61,18 @@ export const useChessStore = defineStore("chess", {
         checkLegalMove(fromSquareName: string, toSquareName: string): boolean {
             return fromSquareName in this.legalMoves && toSquareName in this.legalMoves[fromSquareName];
         },
-        getLegalMove(fromSquareName: string, toSquareName: string): VMove | null {
+        getLegalMove(fromSquareName: string, toSquareName: string): SerializedMove | null {
             return this.chess?.getLegalMove(fromSquareName, toSquareName)?.serialize() ?? null;
         },
-        carryOutMove(move: VMove) {
-            this.chessboard?.carryOutMove(move);
+        carryOutMove(move: SerializedMove) {
+            this.chessboard?.move(move);
         },
-        undoMove(move: VMove) {
+        undoMove(move: SerializedMove) {
             this.chessboard?.undoMove(move);
         },
         tryMove(fromSquareName: string, toSquareName: string) {
             if (this.chess && this.isActiveMoveTheLast) {
-                const move: VMove = this.chess.tryMove(fromSquareName, toSquareName) as VMove;
+                const move: SerializedMove = this.chess.tryMove(fromSquareName, toSquareName) as SerializedMove;
                 if (move) {
                     this.carryOutMove(move);
                     this.activePlayerIndex = this.chess.activePlayerIndex;
@@ -104,8 +104,9 @@ export const useChessStore = defineStore("chess", {
                 moveIndex > 0 &&
                 moveIndex <= this.lastHalfmoveIndex
             ) {
-                const position: string = this.chess.getChessboardPositionByIndex(moveIndex);
-                this.fillChessboard(position);
+                const fenPosition: string = this.chess.getFenPositionByIndex(moveIndex);
+                this.chessboard?.empty();
+                this.fillChessboard(fenPosition);
                 this.activeHalfmoveIndex = moveIndex;
             }
         },
@@ -131,7 +132,7 @@ export const useChessStore = defineStore("chess", {
         },
         cancelLastMove() {
             if (this.chess && this.isActiveMoveTheLast) {
-                const move: VMove = this.chess.cancelLastMove() as VMove;
+                const move: SerializedMove = this.chess.cancelLastMove() as SerializedMove;
                 if (move) {
                     this.undoMove(move);
                     this.activePlayerIndex = this.chess.activePlayerIndex;

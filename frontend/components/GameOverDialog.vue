@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { type VPlayer, type VPiece } from "@/types";
+import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
+import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
 
 const visible = ref<boolean>(false);
 
 const props = withDefaults(
     defineProps<{
-        players: VPlayer[];
+        players: SerializedPlayer[];
         gameOver?: boolean;
-        checkmatePiece?: VPiece | undefined;
+        checkmatePiece?: SerializedPiece | undefined;
         winnerPlayerIndex?: number | undefined;
     }>(),
     {

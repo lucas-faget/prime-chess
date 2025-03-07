@@ -96,12 +96,14 @@ export class Pawn extends Piece {
         return moves;
     }
 
-    static getCaptureDirections(direction: Coordinates): Coordinates[] {
-        if (direction.x === 0 && direction.y !== 0) {
-            return direction.y > 0 ? [Direction.UpLeft, Direction.UpRight] : [Direction.DownLeft, Direction.DownRight];
+    static getCaptureDirections(playerDirection: Coordinates): Coordinates[] {
+        if (playerDirection.x === 0 && playerDirection.y !== 0) {
+            return playerDirection.y > 0
+                ? [Direction.UpLeft, Direction.UpRight]
+                : [Direction.DownLeft, Direction.DownRight];
         } else {
-            if (direction.y === 0 && direction.x !== 0) {
-                return direction.x > 0
+            if (playerDirection.y === 0 && playerDirection.x !== 0) {
+                return playerDirection.x > 0
                     ? [Direction.DownRight, Direction.UpRight]
                     : [Direction.DownLeft, Direction.UpLeft];
             }
@@ -110,11 +112,11 @@ export class Pawn extends Piece {
         return [];
     }
 
-    static getEnPassantCaptureDirections(direction: Coordinates): Coordinates[] {
-        if (direction.x === 0 && direction.y !== 0) {
+    static getEnPassantCaptureDirections(playerDirection: Coordinates): Coordinates[] {
+        if (playerDirection.x === 0 && playerDirection.y !== 0) {
             return [Direction.Left, Direction.Right];
         } else {
-            if (direction.y === 0 && direction.x !== 0) {
+            if (playerDirection.y === 0 && playerDirection.x !== 0) {
                 return [Direction.Down, Direction.Up];
             }
         }

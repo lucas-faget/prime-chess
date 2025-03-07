@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { VChessboard, type VMove, type VLegalMoves } from "@/types";
 import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
+import type { SerializedLegalMoves } from "@shared/chess/serialization/SerializedLegalMoves";
+import type { Chessboard } from "@shared/chess/chessboards/Chessboard";
+import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
 
 const props = withDefaults(
     defineProps<{
         variant: ChessVariant;
         playerInFrontIndex: number;
-        chessboard: VChessboard;
+        chessboard: Chessboard;
         canPlay?: boolean;
-        legalMoves: VLegalMoves;
-        activeMove?: VMove | null;
+        legalMoves: SerializedLegalMoves;
+        activeMove?: SerializedMove | null;
         checkSquare?: string | null;
     }>(),
     {
@@ -108,7 +110,7 @@ function handleSquareClick(squareName: string): void {
             <template v-for="(column, x) in columns" :key="column">
                 <Square
                     :name="getSquareName(column, row)"
-                    :piece="chessboard.squares.get(getSquareName(column, row)) ?? null"
+                    :piece="chessboard.getSquareByName(getSquareName(column, row))?.piece?.serialize() ?? null"
                     :isDark="isDarkSquare(x, y)"
                     :isLegal="isLegalSquare(getSquareName(column, row))"
                     :isActive="isActiveSquare(getSquareName(column, row))"

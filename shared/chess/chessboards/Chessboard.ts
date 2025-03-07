@@ -1,30 +1,31 @@
 import type { Coordinates } from "../coordinates/Position";
 import { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
-import { Bishop } from "../pieces/Bishop";
+import { Piece } from "../pieces/Piece";
+import { Pawn } from "../pieces/Pawn";
 import { Knight } from "../pieces/Knight";
+import { Bishop } from "../pieces/Bishop";
 import { Rook } from "../pieces/Rook";
 import { Queen } from "../pieces/Queen";
+import { King } from "../pieces/King";
 import type { Player } from "../players/Player";
 import { Square } from "../squares/Square";
 import type { Move } from "../moves/Move";
-import { King } from "../pieces/King";
+import type { SerializedMove } from "../serialization/SerializedMove";
 import type { LegalMoves } from "../types/LegalMoves";
-import { Piece } from "../pieces/Piece";
-import type { Chess } from "../games/Chess";
-
-const isInteger = (char: string) => !isNaN(parseInt(char));
-const isPlayerColor = (char: string) => Object.values(PlayerColor).includes(char.toLowerCase() as PlayerColor);
-const isPieceName = (char: string) => Object.values(PieceName).includes(char.toLowerCase() as PieceName);
 
 export abstract class Chessboard {
     ranks: string[];
     files: string[];
+    reversedRanks: string[];
+    reversedFiles: string[];
     squares: Map<string, Square> = new Map();
 
     constructor(ranks: string[], files: string[]) {
         this.ranks = ranks;
         this.files = files;
+        this.reversedRanks = [...this.ranks].reverse();
+        this.reversedFiles = [...this.files].reverse();
 
         for (const [y, rank] of this.ranks.entries()) {
             for (const [x, file] of this.files.entries()) {
@@ -32,10 +33,6 @@ export abstract class Chessboard {
                 this.squares.set(square.name, square);
             }
         }
-
-        // if (position) {
-        //     this.fill(position);
-        // }
     }
 
     getSquareByName(squareName: string): Square | null {
@@ -50,14 +47,23 @@ export abstract class Chessboard {
         return this.squares.get(this.files[position.x] + this.ranks[position.y])!;
     }
 
-    getSquareByDirection(square: Square, direction: Coordinates, step: number = 1): Square | null {
+    getSquareByDirection(square: Square, direction: Coordinates, gap: number = 1): Square | null {
         return this.getSquareByPosition({
-            x: square.position.x + step * direction.x,
-            y: square.position.y + step * direction.y,
+            x: square.position.x + gap * direction.x,
+            y: square.position.y + gap * direction.y,
         });
     }
 
-    calculateLegalMoves(player: Player, enPassantTarget: string | null, chess: Chess): LegalMoves {
+    empty() {
+        for (const [y, rank] of this.ranks.entries()) {
+            for (const [x, file] of this.files.entries()) {
+                let square: Square | null = this.getSquareByName(file + rank);
+                square && (square.piece = null);
+            }
+        }
+    }
+
+    calculateLegalMoves(player: Player, enPassantTarget: string | null): LegalMoves {
         let legalMoves: LegalMoves = {};
 
         for (const square of this.squares.values()) {
@@ -66,7 +72,7 @@ export abstract class Chessboard {
 
                 if (moves) {
                     for (const move of moves) {
-                        if (!this.isCheckedByMoving(player, move, chess)) {
+                        if (!this.isCheckedByMoving(player, move)) {
                             if (!legalMoves[move.fromSquare.name]) {
                                 legalMoves[move.fromSquare.name] = {};
                             }
@@ -80,13 +86,22 @@ export abstract class Chessboard {
         return legalMoves;
     }
 
-    isCheckedByMoving(player: Player, move: Move, chess: Chess): boolean {
+    isCheckedByMoving(player: Player, move: Move): boolean {
         let isChecked: boolean = false;
 
         if (player.kingSquare !== null) {
-            chess.move(move);
-            isChecked = !!this.isChecked(player);
-            chess.undoMove(move);
+            // If the moving piece is a King, we temporarily store the new King square before we verify if the player is checked
+            if (move.fromSquare.isOccupiedByPieceName(PieceName.King)) {
+                move.carryOutMove();
+                player.kingSquare = move.toSquare;
+                isChecked = !!this.isChecked(player);
+                move.undoMove();
+                player.kingSquare = move.fromSquare;
+            } else {
+                move.carryOutMove();
+                isChecked = !!this.isChecked(player);
+                move.undoMove();
+            }
         }
 
         return isChecked;
@@ -201,5 +216,40 @@ export abstract class Chessboard {
         }
 
         return false;
+    }
+
+    move(move: SerializedMove): void {
+        const fromSquare: Square | null = this.getSquareByName(move.fromSquare);
+        const toSquare: Square | null = this.getSquareByName(move.toSquare);
+        const captureSquare: Square | null = move.captureSquare ? this.getSquareByName(move.captureSquare) : null;
+
+        if (fromSquare && fromSquare.piece && toSquare) {
+            captureSquare?.piece && (captureSquare.piece = null);
+            toSquare.piece = move.isPromoting ? new Queen(fromSquare.piece.color) : fromSquare.piece;
+            fromSquare.piece = null;
+        }
+
+        if (move.nestedMove) {
+            this.move(move.nestedMove);
+        }
+    }
+
+    undoMove(move: SerializedMove): void {
+        const fromSquare: Square | null = this.getSquareByName(move.fromSquare);
+        const toSquare: Square | null = this.getSquareByName(move.toSquare);
+        const captureSquare: Square | null = move.captureSquare ? this.getSquareByName(move.captureSquare) : null;
+
+        if (move.nestedMove) {
+            this.undoMove(move.nestedMove);
+        }
+
+        if (fromSquare && toSquare && toSquare.piece) {
+            fromSquare.piece = move.isPromoting ? new Pawn(toSquare.piece.color) : toSquare.piece;
+            toSquare.piece = null;
+
+            if (captureSquare && move.capturedPiece) {
+                captureSquare.setPiece(move.capturedPiece.name as PieceName, move.capturedPiece.color as PlayerColor);
+            }
+        }
     }
 }
