@@ -35,7 +35,7 @@ export const useChessStore = defineStore("chess", {
         },
         async createChessGame(variant: ChessVariant = ChessVariant.Standard) {
             this.variant = variant;
-            this.chess = new Chess(variant as string);
+            this.chess = new Chess(variant);
             this.activePlayerIndex = this.chess.activePlayerIndex;
             this.players = this.chess.players.map((player) => {
                 return {

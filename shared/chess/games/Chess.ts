@@ -5,16 +5,14 @@ import { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
 import type { Piece } from "../pieces/Piece";
 import { Player } from "../players/Player";
-import { Square } from "../squares/Square";
 import type { Move } from "../moves/Move";
 import type { SerializedMove } from "../serialization/SerializedMove";
 import type { LegalMoves } from "../types/LegalMoves";
 import type { SerializedLegalMoves } from "../serialization/SerializedLegalMoves";
+import { GameState } from "../types/GameState";
 import type { Chessboard } from "../chessboards/Chessboard";
 import { TwoPlayerChessboard } from "../chessboards/TwoPlayerChessboard";
 import { FourPlayerChessboard } from "../chessboards/FourPlayerChessboard";
-
-const isChessVariant = (variant: string) => Object.values(ChessVariant).includes(variant.toLowerCase() as ChessVariant);
 
 export class Chess {
     variant: ChessVariant;
@@ -22,14 +20,13 @@ export class Chess {
     activePlayerIndex: number = 0;
     chessboard: Chessboard;
     legalMoves: LegalMoves = {};
-    fenHistory: string[] = [];
-    moveHistory: SerializedMove[] = [];
+    history: GameState[] = [];
     isActivePlayerChecked: boolean = false;
     gameOver: boolean = false;
     checkmatePiece: Piece | undefined = undefined;
 
-    constructor(variant: string = "", fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {
-        this.variant = isChessVariant(variant) ? (variant as ChessVariant) : ChessVariant.Standard;
+    constructor(variant: ChessVariant, fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {
+        this.variant = variant;
 
         this.players =
             variant === ChessVariant.FourPlayer
@@ -51,9 +48,12 @@ export class Chess {
 
         this.setKingSquares();
 
-        this.fenHistory.push(fenString);
+        this.history.push({
+            fenString,
+            move: null,
+        });
 
-        console.log(this.fenHistory[this.fenHistory.length - 1]);
+        console.log(this.history[this.history.length - 1].fenString);
 
         this.setLegalMoves();
     }
@@ -132,27 +132,27 @@ export class Chess {
     }
 
     getHalfmove(moveIndex: number): SerializedMove | null {
-        return moveIndex > 0 && moveIndex <= this.moveHistory.length ? this.moveHistory[moveIndex - 1] : null;
+        return moveIndex > 1 && moveIndex < this.history.length ? this.history[moveIndex].move : null;
     }
 
     getAlgebraicMoves(): string[] {
-        return this.moveHistory.map((move) => move.algebraic);
+        return this.history.slice(1).map((gameState) => gameState?.move?.algebraic ?? "");
     }
 
-    getFenPositionByIndex(moveIndex: number = this.fenHistory.length - 1): string {
-        if (moveIndex >= 0 && moveIndex < this.fenHistory.length) {
-            return this.fenHistory[moveIndex].split(" ")[0];
+    getFenPositionByIndex(moveIndex: number = this.history.length - 1): string {
+        if (moveIndex >= 0 && moveIndex < this.history.length) {
+            return this.history[moveIndex].fenString.split(" ")[0];
         } else {
-            return this.fenHistory[this.fenHistory.length - 1].split(" ")[0];
+            return this.history[this.history.length - 1].fenString.split(" ")[0];
         }
     }
 
     getCastlingRightsFromFen(): string | null {
-        return this.fenHistory.length > 0 ? this.fenHistory[this.fenHistory.length - 1].split(" ")[2] : null;
+        return this.history.length > 0 ? this.history[this.history.length - 1].fenString.split(" ")[2] : null;
     }
 
     getEnPassantTargetFromFen(): string | null {
-        return this.fenHistory.length > 0 ? this.fenHistory[this.fenHistory.length - 1].split(" ")[3] : null;
+        return this.history.length > 0 ? this.history[this.history.length - 1].fenString.split(" ")[3] : null;
     }
 
     getCheckedSquare(): string | null {
@@ -160,24 +160,7 @@ export class Chess {
         return player.isChecked && player.kingSquare !== null ? player.kingSquare.name : null;
     }
 
-    updateKingSquare(player: Player, move: SerializedMove) {
-        if (
-            !player.kingSquare?.isOccupiedByAlly(player.color) ||
-            !player.kingSquare.isOccupiedByPieceName(PieceName.King)
-        ) {
-            const toSquare: Square | null = this.chessboard.getSquareByName(move.toSquare);
-            if (toSquare?.isOccupiedByAlly(player.color) && toSquare.isOccupiedByPieceName(PieceName.King)) {
-                player.kingSquare = toSquare;
-            } else {
-                const fromSquare: Square | null = this.chessboard.getSquareByName(move.fromSquare);
-                if (fromSquare?.isOccupiedByAlly(player.color) && fromSquare.isOccupiedByPieceName(PieceName.King)) {
-                    player.kingSquare = fromSquare;
-                }
-            }
-        }
-    }
-
-    storePosition(move: Move) {
+    storeGameState(move: SerializedMove, enPassantTarget: string | null) {
         const position: string = this.chessboard.toString();
         const activePlayer: string = this.getActivePlayer().color;
         let castlingRights: string =
@@ -185,19 +168,18 @@ export class Chess {
         if (castlingRights.length === 0) {
             castlingRights = "-";
         }
-        const enPassantTarget: string = move.enPassantTarget ?? "-";
+        enPassantTarget = enPassantTarget ?? "-";
         const halfmoveClock: number = 0;
-        const fullmoveNumber: number = Math.floor(1 + this.moveHistory.length / 2);
+        const fullmoveNumber: number = 1 + Math.floor(this.history.length / 2);
 
-        this.fenHistory.push(
-            `${position} ${activePlayer} ${castlingRights} ${enPassantTarget} ${halfmoveClock} ${fullmoveNumber}`
-        );
+        const fenString: string = `${position} ${activePlayer} ${castlingRights} ${enPassantTarget} ${halfmoveClock} ${fullmoveNumber}`;
 
-        console.log(this.fenHistory[this.fenHistory.length - 1]);
-    }
+        this.history.push({
+            fenString,
+            move,
+        });
 
-    storeMove(move: Move) {
-        this.moveHistory.push(move.serialize());
+        console.log(this.history[this.history.length - 1].fenString);
     }
 
     evaluateGame(): void {
@@ -217,12 +199,12 @@ export class Chess {
 
     performMove(move: Move): void {
         this.getActivePlayer().isChecked = false;
-        this.storeMove(move);
+        const serializedMove: SerializedMove = move.serialize();
         move.carryOutMove();
-        this.updateKingSquare(this.getActivePlayer(), this.moveHistory[this.moveHistory.length - 1]);
+        move.toSquare.piece?.getName() === PieceName.King && (this.getActivePlayer().kingSquare = move.toSquare);
         this.getActivePlayer().updateCastlingRights(move);
         this.setNextPlayer();
-        this.storePosition(move);
+        this.storeGameState(serializedMove, move.enPassantTarget);
         this.getActivePlayer().isChecked = this.chessboard.isChecked(this.getActivePlayer());
         this.setLegalMoves();
         this.evaluateGame();
@@ -233,7 +215,7 @@ export class Chess {
             const move = this.getLegalMove(fromSquareName, toSquareName);
             if (move) {
                 this.performMove(move);
-                return this.moveHistory[this.moveHistory.length - 1];
+                return this.history[this.history.length - 1].move;
             }
         }
 
@@ -241,19 +223,19 @@ export class Chess {
     }
 
     cancelLastMove(): SerializedMove | null {
-        if (this.moveHistory.length > 0 && this.fenHistory.length > 0) {
-            const lastMove: SerializedMove | undefined = this.moveHistory.pop();
-            const lastFenPosition: string | undefined = this.fenHistory.pop();
-            if (lastMove && lastFenPosition) {
+        if (this.history.length > 0) {
+            const gameState: GameState | undefined = this.history.pop();
+            if (gameState && gameState.move) {
                 this.getActivePlayer().isChecked = false;
-                this.chessboard.undoMove(lastMove);
+                this.chessboard.undoMove(gameState.move);
                 this.setPreviousPlayer();
-                this.updateKingSquare(this.getActivePlayer(), lastMove);
+                this.chessboard.getSquareByName(gameState.move.fromSquare)?.piece?.getName() === PieceName.King &&
+                    (this.getActivePlayer().kingSquare = this.chessboard.getSquareByName(gameState.move.fromSquare));
                 this.getActivePlayer().setCastlingRightFromString(this.getCastlingRightsFromFen());
                 this.getActivePlayer().isChecked = this.chessboard.isChecked(this.getActivePlayer());
                 this.setLegalMoves();
                 this.evaluateGame();
-                return lastMove;
+                return gameState.move;
             }
         }
 
