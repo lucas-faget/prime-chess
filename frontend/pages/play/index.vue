@@ -35,6 +35,7 @@ function handleMove(fromSquareName: string, toSquareName: string): void {
                         :variant="chessStore.variant"
                         :playerInFrontIndex="chessStore.playerInFrontIndex"
                         :chessboard="chessStore.chessboard"
+                        :activePlayerColor="chessStore.getActivePlayerColor()"
                         :canPlay="chessStore.isActiveMoveTheLast"
                         :legalMoves="chessStore.legalMoves"
                         :activeMove="chessStore.getActiveMove()"

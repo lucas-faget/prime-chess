@@ -3,12 +3,14 @@ import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
 import type { SerializedLegalMoves } from "@shared/chess/serialization/SerializedLegalMoves";
 import type { Chessboard } from "@shared/chess/chessboards/Chessboard";
 import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
+import type { PlayerColor } from "@shared/chess/types/PlayerColor";
 
 const props = withDefaults(
     defineProps<{
         variant: ChessVariant;
         playerInFrontIndex: number;
         chessboard: Chessboard;
+        activePlayerColor: PlayerColor | null;
         canPlay?: boolean;
         legalMoves: SerializedLegalMoves;
         activeMove?: SerializedMove | null;
@@ -73,6 +75,23 @@ const getSquareName = (column: string, row: string): string => (isPerpendicular.
 
 const isDarkSquare = (x: number, y: number): boolean => (isPerpendicular.value ? (x + y) % 2 === 0 : (x + y) % 2 !== 0);
 
+const hasLegalMove = (squareName: string): boolean => squareName in props.legalMoves;
+
+const isLegalMove = (fromSquareName: string, toSquareName: string): boolean =>
+    hasLegalMove(fromSquareName) && toSquareName in props.legalMoves[fromSquareName];
+
+const isLegalSquare = (squareName: string): boolean => {
+    for (const fromSquareName in props.legalMoves) {
+        if (squareName in props.legalMoves[fromSquareName]) {
+            return true;
+        }
+    }
+    return false;
+};
+
+const isLegalSquareForSelectedPiece = (squareName: string): boolean =>
+    props.canPlay && fromSquareName.value !== null && isLegalMove(fromSquareName.value, squareName);
+
 const isActiveSquare = (squareName: string): boolean =>
     props.activeMove !== null &&
     (squareName === props.activeMove.fromSquare || squareName === props.activeMove.toSquare);
@@ -80,13 +99,14 @@ const isActiveSquare = (squareName: string): boolean =>
 const isCheckedSquare = (squareName: string): boolean =>
     props.canPlay && props.checkSquare !== null && squareName === props.checkSquare;
 
-const hasLegalMove = (squareName: string): boolean => squareName in props.legalMoves;
-
-const isLegalMove = (fromSquareName: string, toSquareName: string): boolean =>
-    hasLegalMove(fromSquareName) && toSquareName in props.legalMoves[fromSquareName];
-
-const isLegalSquare = (squareName: string): boolean =>
-    props.canPlay && fromSquareName.value !== null && isLegalMove(fromSquareName.value, squareName);
+const isFoggedSquare = (squareName: string): boolean => {
+    return (
+        props.variant === ChessVariant.FogOfWar &&
+        props.activePlayerColor !== null &&
+        props.chessboard.getSquareByName(squareName)?.piece?.color !== props.activePlayerColor &&
+        !isLegalSquare(squareName)
+    );
+};
 
 function handleSquareClick(squareName: string): void {
     if (props.canPlay) {
@@ -112,9 +132,10 @@ function handleSquareClick(squareName: string): void {
                     :name="getSquareName(column, row)"
                     :piece="chessboard.getSquareByName(getSquareName(column, row))?.piece?.serialize() ?? null"
                     :isDark="isDarkSquare(x, y)"
-                    :isLegal="isLegalSquare(getSquareName(column, row))"
+                    :isLegal="isLegalSquareForSelectedPiece(getSquareName(column, row))"
                     :isActive="isActiveSquare(getSquareName(column, row))"
                     :isChecked="isCheckedSquare(getSquareName(column, row))"
+                    :isFogged="isFoggedSquare(getSquareName(column, row))"
                     @click="handleSquareClick(getSquareName(column, row))"
                 />
             </template>

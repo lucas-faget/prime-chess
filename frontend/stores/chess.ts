@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useSettings } from "~/composables/useSettings";
 import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
+import type { PlayerColor } from "@shared/chess/types/PlayerColor";
 import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
 import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
 import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
@@ -51,6 +52,9 @@ export const useChessStore = defineStore("chess", {
         },
         fillChessboard(fenPosition: string) {
             this.chessboard?.fill(fenPosition);
+        },
+        getActivePlayerColor(): PlayerColor | null {
+            return this.chess?.getActivePlayer().color ?? null;
         },
         getActiveMove(): SerializedMove | null {
             return this.chess?.getHalfmove(this.activeHalfmoveIndex) ?? null;

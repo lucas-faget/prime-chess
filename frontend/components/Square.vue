@@ -11,17 +11,21 @@ withDefaults(
         isLegal?: boolean;
         isActive?: boolean;
         isChecked?: boolean;
+        isFogged?: boolean;
     }>(),
     {
         isLegal: false,
         isActive: false,
         isChecked: false,
+        isFogged: true,
     }
 );
 </script>
 
 <template>
+    <div v-if="isFogged" class="bg-neutral-500"></div>
     <div
+        v-else
         :class="[
             isDark
                 ? isLegal
