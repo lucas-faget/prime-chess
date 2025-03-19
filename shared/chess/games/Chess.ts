@@ -41,6 +41,16 @@ export class Chess {
                       new Player(PlayerColor.Black, "Blacks", Direction.Down),
                   ];
 
+        if (this.variant === ChessVariant.FischerRandom) {
+            let fen: string[] = fenString.split(" ");
+            let position: string[] = fen[0].split("/");
+            const fischerRandomPieceRow: string = Chess.getFischerRandomPieceRow();
+            position[0] = fischerRandomPieceRow;
+            position[position.length - 1] = fischerRandomPieceRow.toUpperCase();
+            fen[0] = position.join("/");
+            fenString = fen.join(" ");
+        }
+
         this.chessboard =
             variant === ChessVariant.FourPlayer
                 ? new FourPlayerChessboard()
@@ -81,6 +91,54 @@ export class Chess {
                 throw new Error(`No king found for player ${player.color}`);
             }
         }
+    }
+
+    static getFischerRandomPieceRow(pieceRow: string = "rnbqkbnr"): string {
+        let allPieces = pieceRow.split("");
+        let fischerRandomPieces: string[] = Array.from({ length: allPieces.length }, (_, i) => "");
+        let indexes: number[] = Array.from({ length: allPieces.length }, (_, i) => i);
+
+        let bishops = allPieces.filter((piece) => piece === "b");
+
+        if (bishops.length > 1) {
+            let largestEven: number = bishops.length % 2 === 0 ? bishops.length : bishops.length - 1;
+            const evenIndexes: number[] = indexes.filter((index) => index % 2 === 0);
+            const oddIndexes: number[] = indexes.filter((index) => index % 2 !== 0);
+            for (let i = 0; i < largestEven; i++) {
+                let indexes: number[] = i < largestEven / 2 ? evenIndexes : oddIndexes;
+                const randomIndex: number = Math.floor(Math.random() * indexes.length);
+                fischerRandomPieces[indexes[randomIndex]] = "b";
+                indexes.splice(randomIndex, 1);
+                bishops.shift();
+            }
+            indexes = [...evenIndexes, ...oddIndexes];
+            indexes.sort((a, b) => a - b);
+        }
+
+        let pieces = allPieces.filter((piece) => piece !== "b" && piece !== "r" && piece !== "k");
+        pieces = [...pieces, ...bishops];
+
+        for (let i = 0; i < pieces.length; i++) {
+            let piece: string = pieces[i];
+            const randomIndex: number = Math.floor(Math.random() * indexes.length);
+            fischerRandomPieces[indexes[randomIndex]] = piece;
+            indexes.splice(randomIndex, 1);
+        }
+
+        pieces = allPieces.filter((piece) => piece === "r" || piece === "k");
+
+        if (pieces.length > 3 && (pieces[0] === "k" || pieces[pieces.length - 1] === "k")) {
+            let kingIndex: number = Math.floor(Math.random() * (pieces.length - 2)) + 1;
+            pieces = pieces.map((piece) => (piece === "k" ? "r" : piece));
+            pieces[kingIndex] = "k";
+        }
+
+        for (let i = 0; i < pieces.length; i++) {
+            let piece: string = pieces[i];
+            fischerRandomPieces[indexes[i]] = piece;
+        }
+
+        return fischerRandomPieces.join("");
     }
 
     getActivePlayer(): Player {

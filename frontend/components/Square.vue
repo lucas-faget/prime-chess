@@ -23,7 +23,7 @@ withDefaults(
 </script>
 
 <template>
-    <div v-if="isFogged" class="bg-neutral-500"></div>
+    <div v-if="isFogged" class="bg-neutral-700"></div>
     <div
         v-else
         :class="[

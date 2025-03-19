@@ -104,6 +104,7 @@ export const useChessStore = defineStore("chess", {
         goToMove(moveIndex: number) {
             if (
                 this.chess &&
+                this.variant !== ChessVariant.FogOfWar &&
                 moveIndex !== this.activeHalfmoveIndex &&
                 moveIndex > 0 &&
                 moveIndex <= this.lastHalfmoveIndex
