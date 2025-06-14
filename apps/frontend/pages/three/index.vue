@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useChessStore } from "~/stores/chess";
-import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
-import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
+import { ChessVariant } from "@chess/types/ChessVariant.ts";
+import type { SerializedMove } from "@chess/serialization/SerializedMove";
 
 const chessStore = useChessStore();
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
+import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 
 const props = withDefaults(
     defineProps<{

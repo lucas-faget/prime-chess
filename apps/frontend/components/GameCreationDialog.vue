@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
+import { ChessVariant } from "@chess/types/ChessVariant.ts";
 import { Opponent } from "~/types/Opponent";
 import { useConfirm } from "primevue/useconfirm";
 import { useChessStore } from "~/stores/chess";

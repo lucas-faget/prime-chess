@@ -1,4 +1,8 @@
 packages:
-    - "backend"
-    - "frontend"
-    - "shared"
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@tailwindcss/oxide'
+  - esbuild

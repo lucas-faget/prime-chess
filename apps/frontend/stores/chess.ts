@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 import { useSettings } from "~/composables/useSettings";
-import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
-import type { PlayerColor } from "@shared/chess/types/PlayerColor";
-import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
-import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
-import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
-import type { SerializedLegalMoves } from "@shared/chess/serialization/SerializedLegalMoves";
-import { TwoPlayerChessboard } from "@shared/chess/chessboards/TwoPlayerChessboard.ts";
-import { Chess } from "@shared/chess/games/Chess.ts";
+import { ChessVariant } from "@chess/types/ChessVariant.ts";
+import type { PlayerColor } from "@chess/types/PlayerColor";
+import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
+import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
+import type { SerializedMove } from "@chess/serialization/SerializedMove";
+import type { SerializedLegalMoves } from "@chess/serialization/SerializedLegalMoves";
+import { TwoPlayerChessboard } from "@chess/chessboards/TwoPlayerChessboard.ts";
+import { Chess } from "@chess/games/Chess.ts";
 
 const { isChessboardSpinAutomatic } = useSettings();
 

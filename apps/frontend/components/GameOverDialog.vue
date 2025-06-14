@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
-import type { SerializedPiece } from "@shared/chess/serialization/SerializedPiece";
+import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
+import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 
 const visible = ref<boolean>(false);
 
@@ -33,8 +33,6 @@ watch(
     <Dialog v-model:visible="visible" modal header="Game over" :style="{ width: 'min(100vw,46rem)' }" class="app-font">
         <div class="flex flex-col gap-4">
             <div class="relative">
-                <img src="/images/game_over.png" alt="Image" class="relative w-full blur-sm" />
-
                 <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col text-center">

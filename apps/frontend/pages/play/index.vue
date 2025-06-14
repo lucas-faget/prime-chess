@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SerializedPlayer } from "@shared/chess/serialization/SerializedPlayer";
+import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
 import { useChessStore } from "~/stores/chess";
 
 definePageMeta({

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ChessVariant } from "@shared/chess/types/ChessVariant.ts";
-import type { SerializedLegalMoves } from "@shared/chess/serialization/SerializedLegalMoves";
-import type { Chessboard } from "@shared/chess/chessboards/Chessboard";
-import type { SerializedMove } from "@shared/chess/serialization/SerializedMove";
-import type { PlayerColor } from "@shared/chess/types/PlayerColor";
+import { ChessVariant } from "@chess/types/ChessVariant.ts";
+import type { SerializedLegalMoves } from "@chess/serialization/SerializedLegalMoves";
+import type { Chessboard } from "@chess/chessboards/Chessboard";
+import type { SerializedMove } from "@chess/serialization/SerializedMove";
+import type { PlayerColor } from "@chess/types/PlayerColor";
 
 const props = withDefaults(
     defineProps<{

@@ -3,7 +3,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@shared/*": ["../shared/*"]
+            "@chess/*": ["../../packages/chess/src/*"]
         }
     }
 }
