@@ -13,11 +13,13 @@
         "@nuxtjs/tailwindcss": "7.0.0-beta.0",
         "@pinia/nuxt": "^0.11.1",
         "@primevue/themes": "^4.3.5",
+        "@tailwindcss/vite": "^4.1.10",
         "chess": "link:..\\packages\\chess",
         "nuxt": "^3.17.5",
         "pinia": "^3.0.3",
         "primeicons": "^7.0.0",
         "primevue": "^4.3.5",
+        "tailwindcss": "^4.1.10",
         "tailwindcss-primeui": "^0.6.1",
         "three": "^0.177.0",
         "vue": "^3.5.16"

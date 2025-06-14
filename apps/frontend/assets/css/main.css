@@ -1,6 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
 @import "primeicons/primeicons.css";
 
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@custom-variant dark (&:where(.p-dark, .p-dark *));
 
 .app-font {
     font-family: "Space Grotesk", sans-serif;
@@ -9,7 +12,6 @@
 :root {
     --header-h: 4rem;
     --aside-w: 16rem;
-
     --chessboard-head-h: 3.5rem;
     --min-square-size: 2rem;
 }

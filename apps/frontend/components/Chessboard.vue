@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChessVariant } from "@chess/types/ChessVariant.ts";
+import { ChessVariant } from "@chess/types/ChessVariant";
 import type { SerializedLegalMoves } from "@chess/serialization/SerializedLegalMoves";
 import type { Chessboard } from "@chess/chessboards/Chessboard";
 import type { SerializedMove } from "@chess/serialization/SerializedMove";
