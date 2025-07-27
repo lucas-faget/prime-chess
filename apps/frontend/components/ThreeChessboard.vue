@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
+const config = useRuntimeConfig();
+
 const props = defineProps(["chessboard", "legalMoves", "lastMove"]);
 
 const lastMove = toRef(props, "lastMove");
@@ -108,7 +110,7 @@ const addAxis = () => {
 
 const loadChessboard = () => {
     loader.value.load(
-        "https://assets.lucas-faget.com/models/chess.glb",
+        `${config.public.assetsBaseUrl}/models/chess.glb`,
         function (gltf) {
             const chessboard = gltf.scene.children[0];
             chessboard.children.forEach((child, index) => {
@@ -137,14 +139,15 @@ const loadChessboard = () => {
             for (const [rankIndex, rank] of props.chessboard.reversedRanks.entries()) {
                 for (const [fileIndex, file] of props.chessboard.files.entries()) {
                     const squareName = file + rank;
-                    const piece = props.chessboard.squares.get(squareName);
+                    const square = props.chessboard.squares.get(squareName);
+                    const piece = square?.piece;
                     if (piece) {
                         const material = piece.color === "w" ? whiteMaterial.value : blackMaterial.value;
                         const x = squareSize * (fileIndex - props.chessboard.files.length / 2 + 0.5);
                         const z = squareSize * (rankIndex - props.chessboard.ranks.length / 2 + 0.5);
 
                         let object;
-                        switch (piece.name) {
+                        switch (piece.getName()) {
                             case "n":
                                 object = knight.clone();
                                 break;
