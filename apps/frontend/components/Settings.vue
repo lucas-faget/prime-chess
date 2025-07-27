@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { useSettings } from "~/composables/useSettings";
-const { getColors, getChessboardColor, setChessboardColor, isChessboardSpinAutomatic, toggleChessboardSpin } =
-    useSettings();
+const {
+    getColors,
+    getChessboardColor,
+    setChessboardColor,
+    isChessboardSpinAutomatic,
+    toggleChessboardSpin,
+    isChessboard3D,
+    toggleChessboard3D,
+} = useSettings();
 
 withDefaults(
     defineProps<{
@@ -27,6 +34,15 @@ const chessboardSpin = computed({
     },
     set() {
         toggleChessboardSpin();
+    },
+});
+
+const chessboard3D = computed({
+    get() {
+        return isChessboard3D();
+    },
+    set() {
+        toggleChessboard3D();
     },
 });
 </script>
@@ -68,6 +84,11 @@ const chessboardSpin = computed({
         <div class="flex gap-2 items-center flex-wrap">
             <span class="text-muted-color">Automatic chessboard spin :</span>
             <ToggleSwitch v-model="chessboardSpin" />
+        </div>
+
+        <div class="flex gap-2 items-center flex-wrap">
+            <span class="text-muted-color">3D chessboard :</span>
+            <ToggleSwitch v-model="chessboard3D" />
         </div>
     </div>
 </template>

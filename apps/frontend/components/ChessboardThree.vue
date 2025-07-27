@@ -63,8 +63,8 @@ const init = () => {
     mouse.value = new THREE.Vector2();
     plane.value = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
-    renderer.value.setSize(window.innerWidth, window.innerHeight);
-    renderer.value.setClearColor(0x000000, 0);
+    onWindowResize();
+    renderer.value.setClearColor(0x000000, 1);
     controls.value.enableDamping = true;
     controls.value.dampingFactor = 0.05;
     controls.value.screenSpacePanning = false;
@@ -98,9 +98,10 @@ const animate = () => {
 };
 
 const onWindowResize = () => {
-    camera.value.aspect = window.innerWidth / window.innerHeight;
+    const { width, height } = container.value.getBoundingClientRect();
+    camera.value.aspect = width / height;
     camera.value.updateProjectionMatrix();
-    renderer.value.setSize(window.innerWidth, window.innerHeight);
+    renderer.value.setSize(width, height);
 };
 
 const addAxis = () => {
@@ -392,5 +393,5 @@ onMounted(() => {
 </script>
 
 <template>
-    <div ref="container"></div>
+    <div ref="container" class="relative size-full overflow-hidden"></div>
 </template>

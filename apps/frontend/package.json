@@ -16,6 +16,7 @@
         "@tailwindcss/vite": "^4.1.10",
         "chess": "link:..\\packages\\chess",
         "dotenv": "^17.2.1",
+        "gsap": "^3.13.0",
         "nuxt": "^3.17.5",
         "pinia": "^3.0.3",
         "primeicons": "^7.0.0",

@@ -1,4 +1,4 @@
-import { type ChessboardColor } from "~/types/ChessboardColor";
+import { type ChessboardColor } from "../types/ChessboardColor";
 
 // prettier-ignore
 const colorClassNames = ref([
@@ -29,6 +29,7 @@ const defaultSettings = {
     darkMode: true,
     chessboardColor: colorClassNames.value.find((color) => color.name === "blue") ?? colorClassNames.value[0],
     chessboardSpin: false,
+    chessboard3D: false,
 };
 
 const userSettings = ref({ ...defaultSettings });
@@ -62,6 +63,14 @@ export function useSettings() {
         userSettings.value.chessboardSpin = !userSettings.value.chessboardSpin;
     };
 
+    const isChessboard3D = () => {
+        return userSettings.value.chessboard3D;
+    };
+
+    const toggleChessboard3D = () => {
+        userSettings.value.chessboard3D = !userSettings.value.chessboard3D;
+    };
+
     const resetSettings = () => {
         userSettings.value = { ...defaultSettings };
     };
@@ -70,11 +79,13 @@ export function useSettings() {
         userSettings,
         isDarkMode,
         toggleDarkMode,
+        getColors,
         getChessboardColor,
         setChessboardColor,
         isChessboardSpinAutomatic,
         toggleChessboardSpin,
+        isChessboard3D,
+        toggleChessboard3D,
         resetSettings,
-        getColors,
     };
 }

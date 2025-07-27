@@ -23,10 +23,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <ThreeChessboard
-        :chessboard="chessStore.chessboard"
-        :legalMoves="chessStore.legalMoves"
-        :lastMove="lastMove"
-        @handle-move="handleMove"
-    />
+    <div class="w-full h-screen">
+        <ChessboardThree
+            :chessboard="chessStore.chessboard"
+            :legalMoves="chessStore.legalMoves"
+            :lastMove="lastMove"
+            @handle-move="handleMove"
+        />
+    </div>
 </template>

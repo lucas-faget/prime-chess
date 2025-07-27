@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
 import { useChessStore } from "~/stores/chess";
+import { useSettings } from "~/composables/useSettings";
+const { isChessboard3D } = useSettings();
 
 definePageMeta({
     middleware: "game-exists",
@@ -30,18 +32,27 @@ function handleMove(fromSquareName: string, toSquareName: string): void {
                     <Player :player="topPlayer" />
                 </div>
                 <div class="aspect-square">
-                    <Chessboard
-                        v-if="chessStore.variant && chessStore.chessboard"
-                        :variant="chessStore.variant"
-                        :playerInFrontIndex="chessStore.playerInFrontIndex"
-                        :chessboard="chessStore.chessboard"
-                        :activePlayerColor="chessStore.getActivePlayerColor()"
-                        :canPlay="chessStore.isActiveMoveTheLast"
-                        :legalMoves="chessStore.legalMoves"
-                        :activeMove="chessStore.getActiveMove()"
-                        :checkSquare="chessStore.getCheckedSquare()"
-                        @handle-move="handleMove"
-                    />
+                    <template v-if="chessStore.variant && chessStore.chessboard">
+                        <ChessboardThree
+                            v-if="isChessboard3D()"
+                            :chessboard="chessStore.chessboard"
+                            :legalMoves="chessStore.legalMoves"
+                            :lastMove="lastMove"
+                            @handle-move="handleMove"
+                        />
+                        <Chessboard
+                            v-else
+                            :variant="chessStore.variant"
+                            :playerInFrontIndex="chessStore.playerInFrontIndex"
+                            :chessboard="chessStore.chessboard"
+                            :activePlayerColor="chessStore.getActivePlayerColor()"
+                            :canPlay="chessStore.isActiveMoveTheLast"
+                            :legalMoves="chessStore.legalMoves"
+                            :activeMove="chessStore.getActiveMove()"
+                            :checkSquare="chessStore.getCheckedSquare()"
+                            @handle-move="handleMove"
+                        />
+                    </template>
                 </div>
                 <div class="h-[var(--chessboard-head-h)] flex items-end shrink-0">
                     <Player :player="bottomPlayer" />
