@@ -32,6 +32,8 @@ export class Move {
     serialize(): SerializedMove {
         return {
             algebraic: this.toString(),
+            fromPosition: this.fromSquare.position,
+            toPosition: this.toSquare.position,
             fromSquare: this.fromSquare.name,
             toSquare: this.toSquare.name,
         };

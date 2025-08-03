@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Coordinates } from "@chess/coordinates/Position";
 import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 import { useSettings } from "~/composables/useSettings";
 const { getChessboardColor } = useSettings();
@@ -12,12 +13,14 @@ withDefaults(
         isActive?: boolean;
         isChecked?: boolean;
         isFogged?: boolean;
+        animationCoordinates?: Coordinates | null;
     }>(),
     {
         isLegal: false,
         isActive: false,
         isChecked: false,
         isFogged: true,
+        animationCoordinates: null,
     }
 );
 </script>
@@ -44,11 +47,6 @@ withDefaults(
                 : getChessboardColor().light,
         ]"
     >
-        <img
-            v-if="piece !== null"
-            class="h-full w-full aspect-square"
-            :src="getPieceImage(piece.color, piece.name)"
-            :alt="piece.name"
-        />
+        <Piece v-if="piece" :name="piece.name" :color="piece.color" :animationCoordinates="animationCoordinates" />
     </div>
 </template>

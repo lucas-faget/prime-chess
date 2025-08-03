@@ -9,7 +9,7 @@ import type { Move } from "../moves/Move";
 import type { SerializedMove } from "../serialization/SerializedMove";
 import type { LegalMoves } from "../types/LegalMoves";
 import type { SerializedLegalMoves } from "../serialization/SerializedLegalMoves";
-import { GameState } from "../types/GameState";
+import type { GameState } from "../types/GameState";
 import type { Chessboard } from "../chessboards/Chessboard";
 import { TwoPlayerChessboard } from "../chessboards/TwoPlayerChessboard";
 import { FourPlayerChessboard } from "../chessboards/FourPlayerChessboard";
@@ -190,7 +190,7 @@ export class Chess {
     }
 
     getHalfmove(moveIndex: number): SerializedMove | null {
-        return moveIndex > 1 && moveIndex < this.history.length ? this.history[moveIndex].move : null;
+        return moveIndex >= 0 && moveIndex < this.history.length ? this.history[moveIndex].move : null;
     }
 
     getAlgebraicMoves(): string[] {
@@ -281,7 +281,7 @@ export class Chess {
     }
 
     cancelLastMove(): SerializedMove | null {
-        if (this.history.length > 0) {
+        if (this.history.length > 1) {
             const gameState: GameState | undefined = this.history.pop();
             if (gameState && gameState.move) {
                 this.getActivePlayer().isChecked = false;

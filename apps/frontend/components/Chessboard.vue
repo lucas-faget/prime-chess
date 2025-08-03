@@ -4,6 +4,12 @@ import type { SerializedLegalMoves } from "@chess/serialization/SerializedLegalM
 import type { Chessboard } from "@chess/chessboards/Chessboard";
 import type { SerializedMove } from "@chess/serialization/SerializedMove";
 import type { PlayerColor } from "@chess/types/PlayerColor";
+import type { Coordinates } from "@chess/coordinates/Position";
+
+const boardRef = ref(null);
+const squareSize = ref<number>(0); // Size of a chessboard square in pixels
+const fromSquareName = ref<string | null>(null);
+let resizeObserver: ResizeObserver | null = null;
 
 const props = withDefaults(
     defineProps<{
@@ -26,8 +32,6 @@ const props = withDefaults(
 const emit = defineEmits<{
     handleMove: [fromSquareName: string, toSquareName: string];
 }>();
-
-const fromSquareName = ref<string | null>(null);
 
 const isPerpendicular = computed(
     () =>
@@ -71,6 +75,28 @@ const gridStyle = computed(() => {
     };
 });
 
+const animationCoordinates = computed(() => {
+    if (props.activeMove) {
+        const dx: number = props.activeMove.toPosition.x - props.activeMove.fromPosition.x;
+        const dy: number = props.activeMove.toPosition.y - props.activeMove.fromPosition.y;
+
+        const isColumnsReversed = isPerpendicular.value
+            ? rows.value[0] === props.chessboard.files[0]
+            : columns.value[0] === props.chessboard.files[0];
+
+        const isRowsReversed = isPerpendicular.value
+            ? columns.value[0] === props.chessboard.ranks[0]
+            : rows.value[0] === props.chessboard.ranks[0];
+
+        return {
+            x: squareSize.value * (isColumnsReversed ? -dx : dx),
+            y: squareSize.value * (isRowsReversed ? -dy : dy),
+        };
+    }
+
+    return null;
+});
+
 const getSquareName = (column: string, row: string): string => (isPerpendicular.value ? row + column : column + row);
 
 const isDarkSquare = (x: number, y: number): boolean => (isPerpendicular.value ? (x + y) % 2 === 0 : (x + y) % 2 !== 0);
@@ -108,6 +134,10 @@ const isFoggedSquare = (squareName: string): boolean => {
     );
 };
 
+const getAnimationCoordinates = (squareName: string): Coordinates | null => {
+    return props.activeMove?.toSquare === squareName ? animationCoordinates.value : null;
+};
+
 function handleSquareClick(squareName: string): void {
     if (props.canPlay) {
         if (hasLegalMove(squareName) && fromSquareName.value !== squareName) {
@@ -122,10 +152,28 @@ function handleSquareClick(squareName: string): void {
         }
     }
 }
+
+onMounted(() => {
+    if (boardRef.value) {
+        resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const width = entry.contentRect.width;
+                squareSize.value = width / props.chessboard.files.length;
+            }
+        });
+        resizeObserver.observe(boardRef.value);
+    }
+});
+
+onBeforeUnmount(() => {
+    if (resizeObserver && boardRef.value) {
+        resizeObserver.unobserve(boardRef.value);
+    }
+});
 </script>
 
 <template>
-    <div class="grid h-full w-full aspect-square" :style="gridStyle">
+    <div ref="boardRef" class="grid h-full w-full aspect-square" :style="gridStyle">
         <template v-for="(row, y) in rows" :key="row">
             <template v-for="(column, x) in columns" :key="column">
                 <Square
@@ -136,6 +184,7 @@ function handleSquareClick(squareName: string): void {
                     :isActive="isActiveSquare(getSquareName(column, row))"
                     :isChecked="isCheckedSquare(getSquareName(column, row))"
                     :isFogged="isFoggedSquare(getSquareName(column, row))"
+                    :animationCoordinates="getAnimationCoordinates(getSquareName(column, row))"
                     @click="handleSquareClick(getSquareName(column, row))"
                 />
             </template>

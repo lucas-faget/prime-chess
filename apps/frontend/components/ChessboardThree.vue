@@ -57,7 +57,7 @@ const init = () => {
     legalMaterial.value = new THREE.MeshStandardMaterial({ color: legalColor });
 
     camera.value = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
-    renderer.value = new THREE.WebGLRenderer({ antialias: true, alpha: true, precision: "lowp" });
+    renderer.value = new THREE.WebGLRenderer({ antialias: false, alpha: true, precision: "lowp" });
     controls.value = new OrbitControls(camera.value, renderer.value.domElement);
     raycaster.value = new THREE.Raycaster();
     mouse.value = new THREE.Vector2();
@@ -72,11 +72,11 @@ const init = () => {
     camera.value.position.set(0.3, 0.3, 0.3);
     camera.value.lookAt(0, 0, 0);
 
-    const light = new THREE.DirectionalLight(0xffffff, 5);
+    const light = new THREE.DirectionalLight(0xffffff, 3);
     light.position.set(0, 0.5, 0);
     camera.value.add(light);
 
-    const ambiantLight = new THREE.AmbientLight(0xffffff);
+    const ambiantLight = new THREE.AmbientLight(0xffffff, 2);
     scene.add(ambiantLight);
 
     const cameraPole = new THREE.Object3D();
