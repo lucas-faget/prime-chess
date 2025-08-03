@@ -29,6 +29,7 @@ const defaultSettings = {
     darkMode: true,
     chessboardColor: colorClassNames.value.find((color) => color.name === "blue") ?? colorClassNames.value[0],
     chessboardSpin: false,
+    pieceAnimation: true,
     chessboard3D: false,
 };
 
@@ -71,6 +72,14 @@ export function useSettings() {
         userSettings.value.chessboard3D = !userSettings.value.chessboard3D;
     };
 
+    const isPieceAnimationEnabled = () => {
+        return userSettings.value.pieceAnimation;
+    };
+
+    const togglePieceAnimation = () => {
+        userSettings.value.pieceAnimation = !userSettings.value.pieceAnimation;
+    };
+
     const resetSettings = () => {
         userSettings.value = { ...defaultSettings };
     };
@@ -84,7 +93,9 @@ export function useSettings() {
         setChessboardColor,
         isChessboardSpinAutomatic,
         toggleChessboardSpin,
+        isPieceAnimationEnabled,
         isChessboard3D,
+        togglePieceAnimation,
         toggleChessboard3D,
         resetSettings,
     };

@@ -5,6 +5,8 @@ import type { Chessboard } from "@chess/chessboards/Chessboard";
 import type { SerializedMove } from "@chess/serialization/SerializedMove";
 import type { PlayerColor } from "@chess/types/PlayerColor";
 import type { Coordinates } from "@chess/coordinates/Position";
+import { useSettings } from "~/composables/useSettings";
+const { isPieceAnimationEnabled } = useSettings();
 
 const boardRef = ref(null);
 const squareSize = ref<number>(0); // Size of a chessboard square in pixels
@@ -76,7 +78,7 @@ const gridStyle = computed(() => {
 });
 
 const animationCoordinates = computed(() => {
-    if (props.activeMove) {
+    if (props.activeMove && isPieceAnimationEnabled()) {
         const dx: number = props.activeMove.toPosition.x - props.activeMove.fromPosition.x;
         const dy: number = props.activeMove.toPosition.y - props.activeMove.fromPosition.y;
 

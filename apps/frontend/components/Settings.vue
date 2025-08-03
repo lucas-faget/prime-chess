@@ -6,6 +6,8 @@ const {
     setChessboardColor,
     isChessboardSpinAutomatic,
     toggleChessboardSpin,
+    isPieceAnimationEnabled,
+    togglePieceAnimation,
     isChessboard3D,
     toggleChessboard3D,
 } = useSettings();
@@ -34,6 +36,15 @@ const chessboardSpin = computed({
     },
     set() {
         toggleChessboardSpin();
+    },
+});
+
+const pieceAnimation = computed({
+    get() {
+        return isPieceAnimationEnabled();
+    },
+    set() {
+        togglePieceAnimation();
     },
 });
 
@@ -84,6 +95,11 @@ const chessboard3D = computed({
         <div class="flex gap-2 items-center flex-wrap">
             <span class="text-muted-color">Automatic chessboard spin :</span>
             <ToggleSwitch v-model="chessboardSpin" />
+        </div>
+
+        <div class="flex gap-2 items-center flex-wrap">
+            <span class="text-muted-color">Piece move animation :</span>
+            <ToggleSwitch v-model="pieceAnimation" />
         </div>
 
         <div class="flex gap-2 items-center flex-wrap">
