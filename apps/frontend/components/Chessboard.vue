@@ -79,21 +79,39 @@ const gridStyle = computed(() => {
 
 const animationCoordinates = computed(() => {
     if (props.activeMove && isPieceAnimationEnabled()) {
-        const dx: number = props.activeMove.toPosition.x - props.activeMove.fromPosition.x;
-        const dy: number = props.activeMove.toPosition.y - props.activeMove.fromPosition.y;
+        let dx: number = props.activeMove.toPosition.x - props.activeMove.fromPosition.x;
+        let dy: number = props.activeMove.toPosition.y - props.activeMove.fromPosition.y;
 
-        const isColumnsReversed = isPerpendicular.value
-            ? rows.value[0] === props.chessboard.files[0]
-            : columns.value[0] === props.chessboard.files[0];
-
-        const isRowsReversed = isPerpendicular.value
-            ? columns.value[0] === props.chessboard.ranks[0]
-            : rows.value[0] === props.chessboard.ranks[0];
-
-        return {
-            x: squareSize.value * (isColumnsReversed ? -dx : dx),
-            y: squareSize.value * (isRowsReversed ? -dy : dy),
-        };
+        switch (props.playerInFrontIndex) {
+            case 1:
+                if (props.variant === ChessVariant.FourPlayer) {
+                    return {
+                        x: squareSize.value * dy,
+                        y: squareSize.value * dx,
+                    };
+                } else {
+                    return {
+                        x: squareSize.value * dx,
+                        y: squareSize.value * -dy,
+                    };
+                }
+            case 2:
+                return {
+                    x: squareSize.value * dx,
+                    y: squareSize.value * -dy,
+                };
+            case 3:
+                return {
+                    x: squareSize.value * -dy,
+                    y: squareSize.value * -dx,
+                };
+            case 0:
+            default:
+                return {
+                    x: squareSize.value * -dx,
+                    y: squareSize.value * dy,
+                };
+        }
     }
 
     return null;

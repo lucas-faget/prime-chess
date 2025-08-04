@@ -6,7 +6,9 @@ import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
 import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 import type { SerializedMove } from "@chess/serialization/SerializedMove";
 import type { SerializedLegalMoves } from "@chess/serialization/SerializedLegalMoves";
+import type { Chessboard } from "@chess/chessboards/Chessboard";
 import { TwoPlayerChessboard } from "@chess/chessboards/TwoPlayerChessboard";
+import { FourPlayerChessboard } from "@chess/chessboards/FourPlayerChessboard";
 import { Chess } from "@chess/games/Chess";
 
 const { isChessboardSpinAutomatic } = useSettings();
@@ -21,7 +23,7 @@ export const useChessStore = defineStore("chess", {
         activeHalfmoveIndex: 0,
         algebraicMoves: [] as string[],
         legalMoves: {} as SerializedLegalMoves,
-        chessboard: null as TwoPlayerChessboard | null,
+        chessboard: null as Chessboard | null,
         playerInFrontIndex: 0,
         gameOver: false as boolean,
         checkmatePiece: undefined as SerializedPiece | undefined,
@@ -47,7 +49,10 @@ export const useChessStore = defineStore("chess", {
             this.lastHalfmoveIndex = 0;
             this.activeHalfmoveIndex = 0;
             this.legalMoves = this.chess.serializeLegalMoves();
-            this.chessboard = new TwoPlayerChessboard(this.chess.getFenPositionByIndex(this.activeHalfmoveIndex));
+            this.chessboard =
+                this.variant === ChessVariant.FourPlayer
+                    ? new FourPlayerChessboard()
+                    : new TwoPlayerChessboard(this.chess.getFenPositionByIndex(this.activeHalfmoveIndex));
             this.playerInFrontIndex = this.activePlayerIndex;
         },
         fillChessboard(fenPosition: string) {
