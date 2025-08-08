@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { useSettings } from "~/composables/useSettings";
 import { ChessVariant } from "@chess/types/ChessVariant";
-import type { PlayerColor } from "@chess/types/PlayerColor";
 import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
 import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 import type { SerializedMove } from "@chess/serialization/SerializedMove";
@@ -31,6 +30,7 @@ export const useChessStore = defineStore("chess", {
     }),
     getters: {
         isActiveMoveTheLast: (state) => state.lastHalfmoveIndex === state.activeHalfmoveIndex,
+        playerInFrontDirection: (state) => state.players[state.playerInFrontIndex].direction,
     },
     actions: {
         gameExists(): boolean {
@@ -44,6 +44,7 @@ export const useChessStore = defineStore("chess", {
                 return {
                     name: player.name,
                     color: player.color as string,
+                    direction: player.direction,
                 };
             });
             this.lastHalfmoveIndex = 0;
@@ -58,8 +59,8 @@ export const useChessStore = defineStore("chess", {
         fillChessboard(fenPosition: string) {
             this.chessboard?.fill(fenPosition);
         },
-        getActivePlayerColor(): PlayerColor | null {
-            return this.chess?.getActivePlayer().color ?? null;
+        getActivePlayer(): SerializedPlayer | null {
+            return this.chess?.getActivePlayer() ?? null;
         },
         getActiveMove(): SerializedMove | null {
             return this.chess?.getHalfmove(this.activeHalfmoveIndex) ?? null;

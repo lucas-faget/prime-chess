@@ -1,5 +1,6 @@
-import type { Coordinates } from "../coordinates/Position";
-import { Direction } from "../coordinates/Direction";
+import type { Position } from "../coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
+import { Directions } from "../coordinates/Directions";
 import { PieceName } from "../types/PieceName";
 import type { PlayerColor } from "../types/PlayerColor";
 import { Piece } from "./Piece";
@@ -96,44 +97,45 @@ export class Pawn extends Piece {
         return moves;
     }
 
-    static getCaptureDirections(playerDirection: Coordinates): Coordinates[] {
-        if (playerDirection.x === 0 && playerDirection.y !== 0) {
-            return playerDirection.y > 0
-                ? [Direction.UpLeft, Direction.UpRight]
-                : [Direction.DownLeft, Direction.DownRight];
+    static getCaptureDirections(playerDirection: Direction): Direction[] {
+        if (playerDirection.dx === 0 && playerDirection.dy !== 0) {
+            return playerDirection.dy > 0
+                ? [Directions.UpLeft, Directions.UpRight]
+                : [Directions.DownLeft, Directions.DownRight];
         } else {
-            if (playerDirection.y === 0 && playerDirection.x !== 0) {
-                return playerDirection.x > 0
-                    ? [Direction.DownRight, Direction.UpRight]
-                    : [Direction.DownLeft, Direction.UpLeft];
+            if (playerDirection.dy === 0 && playerDirection.dx !== 0) {
+                return playerDirection.dx > 0
+                    ? [Directions.DownRight, Directions.UpRight]
+                    : [Directions.DownLeft, Directions.UpLeft];
             }
         }
 
         return [];
     }
 
-    static getEnPassantCaptureDirections(playerDirection: Coordinates): Coordinates[] {
-        if (playerDirection.x === 0 && playerDirection.y !== 0) {
-            return [Direction.Left, Direction.Right];
+    static getEnPassantCaptureDirections(playerDirection: Direction): Direction[] {
+        if (playerDirection.dx === 0 && playerDirection.dy !== 0) {
+            return [Directions.Left, Directions.Right];
         } else {
-            if (playerDirection.y === 0 && playerDirection.x !== 0) {
-                return [Direction.Down, Direction.Up];
+            if (playerDirection.dy === 0 && playerDirection.dx !== 0) {
+                return [Directions.Down, Directions.Up];
             }
         }
 
         return [];
     }
 
-    static isStartingPosition(position: Coordinates, direction: Coordinates, chessboard: Chessboard): boolean {
-        if (direction.x === 0 && direction.y !== 0) {
+    static isStartingPosition(position: Position, direction: Direction, chessboard: Chessboard): boolean {
+        if (direction.dx === 0 && direction.dy !== 0) {
             return (
-                (direction.y > 0 && position.y === 1) || (direction.y < 0 && position.y === chessboard.ranks.length - 2)
+                (direction.dy > 0 && position.y === 1) ||
+                (direction.dy < 0 && position.y === chessboard.ranks.length - 2)
             );
         } else {
-            if (direction.y === 0 && direction.x !== 0) {
+            if (direction.dy === 0 && direction.dx !== 0) {
                 return (
-                    (direction.x > 0 && position.x === 1) ||
-                    (direction.x < 0 && position.x === chessboard.ranks.length - 2)
+                    (direction.dx > 0 && position.x === 1) ||
+                    (direction.dx < 0 && position.x === chessboard.ranks.length - 2)
                 );
             }
         }

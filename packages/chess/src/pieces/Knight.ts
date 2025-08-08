@@ -1,5 +1,5 @@
-import type { Coordinates } from "../coordinates/Position";
-import { Direction } from "../coordinates/Direction";
+import type { Direction } from "@chess/coordinates/Direction";
+import { Directions } from "../coordinates/Directions";
 import { PieceName } from "../types/PieceName";
 import { Piece } from "./Piece";
 import type { Player } from "../players/Player";
@@ -9,15 +9,15 @@ import { Capture } from "../moves/Capture";
 import type { Chessboard } from "../chessboards/Chessboard";
 
 export class Knight extends Piece {
-    static Directions: Coordinates[] = [
-        Direction.UpUpLeft,
-        Direction.UpUpRight,
-        Direction.UpRightRight,
-        Direction.DownRightRight,
-        Direction.DownDownRight,
-        Direction.DownDownLeft,
-        Direction.DownLeftLeft,
-        Direction.UpLeftLeft,
+    static Directions: Direction[] = [
+        Directions.UpUpLeft,
+        Directions.UpUpRight,
+        Directions.UpRightRight,
+        Directions.DownRightRight,
+        Directions.DownDownRight,
+        Directions.DownDownLeft,
+        Directions.DownLeftLeft,
+        Directions.UpLeftLeft,
     ];
 
     getName(): PieceName {

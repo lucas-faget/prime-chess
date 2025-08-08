@@ -1,4 +1,4 @@
-import type { Coordinates } from "../coordinates/Position";
+import type { Position } from "../coordinates/Position";
 import type { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
 import type { Piece } from "../pieces/Piece";
@@ -11,10 +11,10 @@ import { King } from "../pieces/King";
 
 export class Square {
     name: string;
-    position: Coordinates;
+    position: Position;
     piece: Piece | null;
 
-    constructor(name: string, position: Coordinates) {
+    constructor(name: string, position: Position) {
         this.name = name;
         this.position = position;
         this.piece = null;

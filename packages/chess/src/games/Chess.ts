@@ -1,6 +1,6 @@
 import { ChessVariant } from "../types/ChessVariant";
-import type { Coordinates } from "../coordinates/Position";
-import { Direction } from "../coordinates/Direction";
+import type { Position } from "../coordinates/Position";
+import { Directions } from "../coordinates/Directions";
 import { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
 import type { Piece } from "../pieces/Piece";
@@ -31,14 +31,14 @@ export class Chess {
         this.players =
             variant === ChessVariant.FourPlayer
                 ? [
-                      new Player(PlayerColor.White, "Whites", Direction.Up),
-                      new Player(PlayerColor.Silver, "Silvers", Direction.Right),
-                      new Player(PlayerColor.Black, "Blacks", Direction.Down),
-                      new Player(PlayerColor.Gold, "Golds", Direction.Left),
+                      new Player(PlayerColor.White, "Whites", Directions.Up),
+                      new Player(PlayerColor.Silver, "Silvers", Directions.Right),
+                      new Player(PlayerColor.Black, "Blacks", Directions.Down),
+                      new Player(PlayerColor.Gold, "Golds", Directions.Left),
                   ]
                 : [
-                      new Player(PlayerColor.White, "Whites", Direction.Up),
-                      new Player(PlayerColor.Black, "Blacks", Direction.Down),
+                      new Player(PlayerColor.White, "Whites", Directions.Up),
+                      new Player(PlayerColor.Black, "Blacks", Directions.Down),
                   ];
 
         if (this.variant === ChessVariant.FischerRandom) {
@@ -304,7 +304,7 @@ export class Chess {
         // TODO
     }
 
-    static areEqualCoordinates(corrdinates1: Coordinates, coordinates2: Coordinates): boolean {
+    static areEqualCoordinates(corrdinates1: Position, coordinates2: Position): boolean {
         return corrdinates1.x === coordinates2.x && coordinates2.y === coordinates2.y;
     }
 }

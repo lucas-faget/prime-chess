@@ -1,4 +1,4 @@
-import type { Coordinates } from "../coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
 import { PieceName } from "../types/PieceName";
 import { Piece } from "./Piece";
 import type { Player } from "../players/Player";
@@ -8,7 +8,7 @@ import { Capture } from "../moves/Capture";
 import type { Chessboard } from "../chessboards/Chessboard";
 
 export abstract class MobilePiece extends Piece {
-    directions: Coordinates[] = [];
+    directions: Direction[] = [];
 
     getMoves(player: Player, fromSquare: Square, chessboard: Chessboard): Move[] {
         let moves: Move[] = [];

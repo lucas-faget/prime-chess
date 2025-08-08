@@ -1,5 +1,5 @@
-import type { Coordinates } from "../coordinates/Position";
-import { Direction } from "../coordinates/Direction";
+import type { Direction } from "@chess/coordinates/Direction";
+import { Directions } from "../coordinates/Directions";
 import { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
 import type { CastlingRights } from "../types/CastlingRights";
@@ -14,19 +14,19 @@ import { CastlingSide } from "../types/CastlingSide";
 export class Player {
     name: string;
     color: PlayerColor;
-    direction: Coordinates;
-    pawnCaptureDirections: Coordinates[];
-    enPassantCaptureDirections: Coordinates[];
+    direction: Direction;
+    pawnCaptureDirections: Direction[];
+    enPassantCaptureDirections: Direction[];
     castlingRights: CastlingRights;
-    kingsideCastlingDirection: Coordinates | null;
-    queensideCastlingDirection: Coordinates | null;
+    kingsideCastlingDirection: Direction | null;
+    queensideCastlingDirection: Direction | null;
     kingSquare: Square | null = null;
     isChecked: Piece | false = false;
 
     constructor(
         color: PlayerColor,
         name: string,
-        direction: Coordinates,
+        direction: Direction,
         castlingRights: CastlingRights = { kingside: true, queenside: true }
     ) {
         this.color = color;
@@ -39,12 +39,12 @@ export class Player {
         this.queensideCastlingDirection = King.getCastlingDirection(CastlingSide.Queenside, direction);
     }
 
-    kingsideDirection(): Coordinates {
-        return this.direction.y === 0 ? Direction.Right : Direction.Down;
+    kingsideDirection(): Direction {
+        return this.direction.dy === 0 ? Directions.Right : Directions.Down;
     }
 
-    queensideDirection(): Coordinates {
-        return this.direction.y === 0 ? Direction.Left : Direction.Up;
+    queensideDirection(): Direction {
+        return this.direction.dy === 0 ? Directions.Left : Directions.Up;
     }
 
     updateCastlingRights(move: Move): void {

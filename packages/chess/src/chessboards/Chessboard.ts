@@ -1,4 +1,5 @@
-import type { Coordinates } from "../coordinates/Position";
+import type { Position } from "../coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
 import { PlayerColor } from "../types/PlayerColor";
 import { PieceName } from "../types/PieceName";
 import { Piece } from "../pieces/Piece";
@@ -39,7 +40,7 @@ export abstract class Chessboard {
         return this.squares.get(squareName) ?? null;
     }
 
-    getSquareByPosition(position: Coordinates): Square | null {
+    getSquareByPosition(position: Position): Square | null {
         if (position.x < 0 || position.y < 0 || position.x >= this.files.length || position.y >= this.ranks.length) {
             return null;
         }
@@ -47,10 +48,10 @@ export abstract class Chessboard {
         return this.squares.get(this.files[position.x] + this.ranks[position.y])!;
     }
 
-    getSquareByDirection(square: Square, direction: Coordinates, gap: number = 1): Square | null {
+    getSquareByDirection(square: Square, direction: Direction, repetition: number = 1): Square | null {
         return this.getSquareByPosition({
-            x: square.position.x + gap * direction.x,
-            y: square.position.y + gap * direction.y,
+            x: square.position.x + repetition * direction.dx,
+            y: square.position.y + repetition * direction.dy,
         });
     }
 
@@ -125,7 +126,7 @@ export abstract class Chessboard {
             let square: Square | null = null;
 
             for (const direction of Bishop.Directions) {
-                if (direction.x === player.direction.x || direction.y === player.direction.y) {
+                if (direction.dx === player.direction.dx || direction.dy === player.direction.dy) {
                     square = this.getSquareByDirection(player.kingSquare, direction);
                     if (
                         square &&

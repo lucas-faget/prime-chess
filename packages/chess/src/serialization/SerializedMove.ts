@@ -1,10 +1,10 @@
-import type { Coordinates } from "@chess/coordinates/Position";
+import type { Position } from "@chess/coordinates/Position";
 import type { SerializedPiece } from "./SerializedPiece";
 
 export type SerializedMove = {
     algebraic: string;
-    fromPosition: Coordinates;
-    toPosition: Coordinates;
+    fromPosition: Position;
+    toPosition: Position;
     fromSquare: string;
     toSquare: string;
     captureSquare?: string | null;

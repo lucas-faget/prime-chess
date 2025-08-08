@@ -1,5 +1,6 @@
-import type { Coordinates } from "../coordinates/Position";
-import { Direction } from "../coordinates/Direction";
+import type { Position } from "../coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
+import { Directions } from "../coordinates/Directions";
 import { PieceName } from "../types/PieceName";
 import { CastlingSide } from "../types/CastlingSide";
 import { Piece } from "./Piece";
@@ -12,7 +13,7 @@ import { Castling } from "../moves/Castling";
 import type { Chessboard } from "../chessboards/Chessboard";
 
 export class King extends Piece {
-    static Directions: Coordinates[] = Queen.Directions;
+    static Directions: Direction[] = Queen.Directions;
     static KingsideCastlingGap: number = 3;
     static QueensideCastlingGap: number = 4;
 
@@ -56,7 +57,7 @@ export class King extends Piece {
             player.castlingRights.queenside && sides.push(CastlingSide.Queenside);
 
             for (const side of sides) {
-                const castlingDirection: Coordinates | null =
+                const castlingDirection: Direction | null =
                     side === CastlingSide.Kingside
                         ? player.kingsideCastlingDirection
                         : player.queensideCastlingDirection;
@@ -95,12 +96,12 @@ export class King extends Piece {
         return moves;
     }
 
-    static getCastlingDirection(castlingSide: CastlingSide, playerDirection: Coordinates): Coordinates | null {
-        if (playerDirection.x === 0 && playerDirection.y !== 0) {
-            return castlingSide === CastlingSide.Kingside ? Direction.Right : Direction.Left;
+    static getCastlingDirection(castlingSide: CastlingSide, playerDirection: Direction): Direction | null {
+        if (playerDirection.dx === 0 && playerDirection.dy !== 0) {
+            return castlingSide === CastlingSide.Kingside ? Directions.Right : Directions.Left;
         } else {
-            if (playerDirection.y === 0 && playerDirection.x !== 0) {
-                return castlingSide === CastlingSide.Kingside ? Direction.Down : Direction.Up;
+            if (playerDirection.dy === 0 && playerDirection.dx !== 0) {
+                return castlingSide === CastlingSide.Kingside ? Directions.Down : Directions.Up;
             }
         }
 

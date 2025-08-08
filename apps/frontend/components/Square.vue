@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { Coordinates } from "@chess/coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
 import type { SerializedPiece } from "@chess/serialization/SerializedPiece";
 import { useSettings } from "~/composables/useSettings";
 const { getChessboardColor } = useSettings();
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
-        name?: string;
+        name: string;
         piece: SerializedPiece | null;
         isDark: boolean;
         isLegal?: boolean;
         isActive?: boolean;
         isChecked?: boolean;
         isFogged?: boolean;
-        animationCoordinates?: Coordinates | null;
+        animationCoordinates?: Direction | null;
     }>(),
     {
         isLegal: false,
@@ -23,30 +23,33 @@ withDefaults(
         animationCoordinates: null,
     }
 );
+
+const colorClass = computed(() => {
+    const colors = getChessboardColor();
+
+    if (props.isDark) {
+        if (props.isLegal) return colors.darkLegal;
+        if (props.isActive) return colors.darkActive;
+        if (props.isChecked) return colors.darkChecked;
+        return colors.dark;
+    } else {
+        if (props.isLegal) return colors.lightLegal;
+        if (props.isActive) return colors.lightActive;
+        if (props.isChecked) return colors.lightChecked;
+        return colors.light;
+    }
+});
 </script>
 
 <template>
-    <div v-if="isFogged" class="bg-neutral-700"></div>
-    <div
-        v-else
-        :class="[
-            isDark
-                ? isLegal
-                    ? getChessboardColor().darkLegal
-                    : isActive
-                    ? getChessboardColor().darkActive
-                    : isChecked
-                    ? getChessboardColor().darkChecked
-                    : getChessboardColor().dark
-                : isLegal
-                ? getChessboardColor().lightLegal
-                : isActive
-                ? getChessboardColor().lightActive
-                : isChecked
-                ? getChessboardColor().lightChecked
-                : getChessboardColor().light,
-        ]"
-    >
-        <Piece v-if="piece" :name="piece.name" :color="piece.color" :animationCoordinates="animationCoordinates" />
+    <div v-if="isFogged" :data-square="name" class="square bg-neutral-700"></div>
+    <div v-else :data-square="name" :class="['square', colorClass]">
+        <Piece
+            v-if="piece"
+            :name="piece.name"
+            :color="piece.color"
+            :squareName="name"
+            :animationCoordinates="animationCoordinates"
+        />
     </div>
 </template>

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import type { Coordinates } from "@chess/coordinates/Position";
+import type { Direction } from "@chess/coordinates/Direction";
 import gsap from "gsap";
 
 const props = withDefaults(
     defineProps<{
         color: string;
         name: string;
-        animationCoordinates?: Coordinates | null;
+        squareName: string;
+        animationCoordinates?: Direction | null;
     }>(),
     {
         animationCoordinates: null,
@@ -21,8 +22,8 @@ onMounted(() => {
         const el = pieceRef.value;
 
         gsap.set(el, {
-            x: props.animationCoordinates.x,
-            y: props.animationCoordinates.y,
+            x: props.animationCoordinates.dx,
+            y: props.animationCoordinates.dy,
         });
 
         gsap.to(el, {
@@ -36,5 +37,11 @@ onMounted(() => {
 </script>
 
 <template>
-    <img ref="pieceRef" class="h-full w-full aspect-square piece" :src="getPieceImage(color, name)" :alt="name" />
+    <img
+        ref="pieceRef"
+        class="piece h-full w-full aspect-square piece"
+        :data-square="squareName"
+        :src="getPieceImage(color, name)"
+        :alt="name"
+    />
 </template>
