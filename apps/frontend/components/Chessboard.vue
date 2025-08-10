@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Position } from "@chess/coordinates/Position";
 import type { Direction } from "@chess/coordinates/Direction";
 import { ChessVariant } from "@chess/types/ChessVariant";
 import type { SerializedPlayer } from "@chess/serialization/SerializedPlayer";
@@ -83,13 +82,10 @@ const animationCoordinates = computed(() => {
         let dx: number = props.activeMove.toPosition.x - props.activeMove.fromPosition.x;
         let dy: number = props.activeMove.toPosition.y - props.activeMove.fromPosition.y;
 
-        return boardToScreenDirection(
-            {
-                dx: -squareSize.value * dx,
-                dy: -squareSize.value * dy,
-            },
-            props.playerInFrontDirection
-        );
+        return boardToScreenDirection({
+            dx: squareSize.value * dx,
+            dy: squareSize.value * dy,
+        });
     }
 
     return null;
@@ -138,24 +134,82 @@ const getAnimationCoordinates = (squareName: string): Direction | null => {
     return props.activeMove?.toSquare === squareName ? animationCoordinates.value : null;
 };
 
-function boardToScreenDirection(direction: Direction, boardUp: Direction) {
+function boardToScreenDirection(direction: Direction) {
+    const boardUp: Direction = props.playerInFrontDirection;
     const boardRight: Direction = { dx: boardUp.dy, dy: -boardUp.dx };
 
-    // [screenX] = [boardRight.x  -boardUp.x ] * [ direction.x ]
-    // [screenY]   [boardRight.y  -boardUp.y ]   [ direction.y ]
     return {
         dx: direction.dx * boardRight.dx - direction.dy * boardUp.dx,
         dy: direction.dx * boardRight.dy - direction.dy * boardUp.dy,
     };
 }
 
-function screenToBoardDirection(direction: Direction, boardUp: Direction): Direction {
+function screenToBoardDirection(direction: Direction): Direction {
+    const boardUp: Direction = props.playerInFrontDirection;
     const boardRight: Direction = { dx: boardUp.dy, dy: -boardUp.dx };
 
     return {
         dx: direction.dx * boardRight.dx + direction.dy * boardRight.dy,
         dy: -(direction.dx * boardUp.dx + direction.dy * boardUp.dy),
     };
+}
+
+function createDraggable(target: HTMLElement) {
+    Draggable.create(target, {
+        type: "x,y",
+        inertia: true,
+        bounds: boardRef.value,
+        onPress() {
+            const squareName = this.target.dataset.square;
+            if (!props.canPlay) {
+                this.endDrag();
+                return;
+            }
+            const square = props.chessboard.getSquareByName(squareName);
+            if (!square || square.piece?.color !== props.activePlayer?.color) {
+                this.endDrag();
+                return;
+            }
+            fromSquareName.value = squareName;
+        },
+        onDragEnd() {
+            const squareName = this.target.dataset.square;
+            if (!squareName) {
+                fromSquareName.value = null;
+                return;
+            }
+
+            const fromSquare = props.chessboard.getSquareByName(squareName);
+            if (!fromSquare) {
+                fromSquareName.value = null;
+                return;
+            }
+
+            const dx = Math.floor((this.x + squareSize.value / 2) / squareSize.value);
+            const dy = Math.floor((this.y + squareSize.value / 2) / squareSize.value);
+            const direction: Direction = screenToBoardDirection({ dx, dy });
+
+            const toSquare = props.chessboard.getSquareByDirection(fromSquare, direction);
+            if (toSquare && isLegalMove(fromSquare.name, toSquare.name)) {
+                emit("handleMove", fromSquare.name, toSquare.name);
+                fromSquareName.value = null;
+                return;
+            }
+
+            gsap.to(this.target, { x: 0, y: 0 });
+            fromSquareName.value = null;
+        },
+    });
+}
+
+function handlePieceMounted(target: HTMLElement | null) {
+    if (!target) return;
+    createDraggable(target);
+}
+
+function handlePieceUnmounted(target: HTMLElement | null) {
+    if (!target) return;
+    Draggable.get(target)?.kill();
 }
 
 function handleSquareClick(squareName: string): void {
@@ -180,49 +234,6 @@ onMounted(() => {
         });
         resizeObserver.observe(boardRef.value);
     }
-
-    nextTick(() => {
-        Draggable.create(".piece", {
-            type: "x,y",
-            inertia: true,
-            bounds: boardRef.value,
-            onPress() {
-                const squareName = this.target.dataset.square;
-                if (
-                    !props.canPlay ||
-                    props.chessboard.getSquareByName(squareName)?.piece?.color !== props.activePlayer?.color
-                ) {
-                    this.endDrag();
-                    return;
-                }
-                fromSquareName.value = squareName;
-            },
-            // onRelease() {
-            //     fromSquareName.value = null;
-            // },
-            onDragEnd() {
-                if (this.target.dataset.square && props.activePlayer) {
-                    const fromSquare: Square | null = props.chessboard.getSquareByName(this.target.dataset.square);
-                    if (fromSquare) {
-                        const dx: number = Math.floor((this.x + squareSize.value / 2) / squareSize.value);
-                        const dy: number = Math.floor((this.y + squareSize.value / 2) / squareSize.value);
-                        const direction: Direction = screenToBoardDirection({ dx, dy }, props.playerInFrontDirection);
-                        const toSquare = props.chessboard.getSquareByDirection(fromSquare, direction);
-                        if (toSquare) {
-                            if (isLegalMove(fromSquare.name, toSquare.name)) {
-                                emit("handleMove", fromSquare.name, toSquare.name);
-                                return;
-                            }
-                        }
-                    }
-
-                    gsap.to(this.target, { x: 0, y: 0 });
-                }
-
-                fromSquareName.value = null;
-            },
-        });
-    });
 });
 
 onBeforeUnmount(() => {
@@ -233,7 +244,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="boardRef" class="grid h-full w-full aspect-square" :style="gridStyle">
+    <div ref="boardRef" class="relative grid h-full w-full aspect-square" :style="gridStyle">
         <template v-for="(row, y) in rows" :key="row">
             <template v-for="(column, x) in columns" :key="column">
                 <Square
@@ -245,6 +256,8 @@ onBeforeUnmount(() => {
                     :isChecked="isCheckedSquare(getSquareName(column, row))"
                     :isFogged="isFoggedSquare(getSquareName(column, row))"
                     :animationCoordinates="getAnimationCoordinates(getSquareName(column, row))"
+                    @pieceMounted="handlePieceMounted"
+                    @pieceUnmounted="handlePieceUnmounted"
                     @click="handleSquareClick(getSquareName(column, row))"
                 />
             </template>

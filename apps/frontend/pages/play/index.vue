@@ -37,8 +37,8 @@ function handleMove(fromSquareName: string, toSquareName: string): void {
                             v-if="isChessboard3D()"
                             :chessboard="chessStore.chessboard"
                             :legalMoves="chessStore.legalMoves"
-                            :lastMove="lastMove"
-                            @handle-move="handleMove"
+                            :lastMove="chessStore.getLastMove()"
+                            @handleMove="handleMove"
                         />
                         <Chessboard
                             v-else
@@ -51,7 +51,7 @@ function handleMove(fromSquareName: string, toSquareName: string): void {
                             :legalMoves="chessStore.legalMoves"
                             :activeMove="chessStore.getActiveMove()"
                             :checkSquare="chessStore.getCheckedSquare()"
-                            @handle-move="handleMove"
+                            @handleMove="handleMove"
                         />
                     </template>
                 </div>

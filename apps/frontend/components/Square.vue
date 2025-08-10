@@ -39,10 +39,15 @@ const colorClass = computed(() => {
         return colors.light;
     }
 });
+
+const emit = defineEmits<{
+    pieceMounted: [target: HTMLElement | null];
+    pieceUnmounted: [target: HTMLElement | null];
+}>();
 </script>
 
 <template>
-    <div v-if="isFogged" :data-square="name" class="square bg-neutral-700"></div>
+    <div v-if="isFogged" :data-square="name" class="square relative bg-neutral-700"></div>
     <div v-else :data-square="name" :class="['square', colorClass]">
         <Piece
             v-if="piece"
@@ -50,6 +55,8 @@ const colorClass = computed(() => {
             :color="piece.color"
             :squareName="name"
             :animationCoordinates="animationCoordinates"
+            @pieceMounted="$emit('pieceMounted', $event)"
+            @pieceUnmounted="$emit('pieceUnmounted', $event)"
         />
     </div>
 </template>

@@ -15,15 +15,20 @@ const props = withDefaults(
     }
 );
 
-const pieceRef = ref<HTMLImageElement | null>(null);
+const pieceRef = ref<HTMLElement | null>(null);
 
-onMounted(() => {
+const emit = defineEmits<{
+    pieceMounted: [target: HTMLElement | null];
+    pieceUnmounted: [target: HTMLElement | null];
+}>();
+
+const performAnimation = () => {
     if (pieceRef.value && props.animationCoordinates) {
         const el = pieceRef.value;
 
         gsap.set(el, {
-            x: props.animationCoordinates.dx,
-            y: props.animationCoordinates.dy,
+            x: -props.animationCoordinates.dx,
+            y: -props.animationCoordinates.dy,
         });
 
         gsap.to(el, {
@@ -33,13 +38,23 @@ onMounted(() => {
             ease: "power2.out",
         });
     }
+};
+
+onMounted(() => {
+    performAnimation();
+    emit("pieceMounted", pieceRef.value);
+});
+
+onUnmounted(() => {
+    performAnimation();
+    emit("pieceUnmounted", pieceRef.value);
 });
 </script>
 
 <template>
     <img
         ref="pieceRef"
-        class="piece h-full w-full aspect-square piece"
+        class="piece relative h-full w-full aspect-square piece"
         :data-square="squareName"
         :src="getPieceImage(color, name)"
         :alt="name"

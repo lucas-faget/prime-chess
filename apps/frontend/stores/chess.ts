@@ -65,6 +65,9 @@ export const useChessStore = defineStore("chess", {
         getActiveMove(): SerializedMove | null {
             return this.chess?.getHalfmove(this.activeHalfmoveIndex) ?? null;
         },
+        getLastMove(): SerializedMove | null {
+            return this.chess?.getHalfmove(this.lastHalfmoveIndex) ?? null;
+        },
         getCheckedSquare(): string | null {
             return this.chess?.getCheckedSquare() ?? null;
         },
