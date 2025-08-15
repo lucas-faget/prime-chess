@@ -14,6 +14,7 @@
         "@pinia/nuxt": "^0.11.1",
         "@primevue/themes": "^4.3.5",
         "@tailwindcss/vite": "^4.1.10",
+        "chart.js": "^4.5.0",
         "chess": "link:..\\packages\\chess",
         "dotenv": "^17.2.1",
         "gsap": "^3.13.0",
