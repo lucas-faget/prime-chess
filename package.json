@@ -1,0 +1,19 @@
+{
+    "name": "prime-chess",
+    "version": "1.0.0",
+    "description": "",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "keywords": [],
+    "author": "lucas-faget",
+    "packageManager": "pnpm@10.19.0",
+    "devDependencies": {
+        "prettier": "^3.6.2"
+    }
+}
