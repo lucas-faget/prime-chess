@@ -7,7 +7,9 @@
         "packages/*"
     ],
     "scripts": {
-        "dev:frontend": "pnpm --filter @primevue/frontend dev",
+        "dev:frontend": "pnpm --filter @primechess/frontend dev",
+        "dev:backend": "pnpm --filter @primechess/backend dev",
+        "dev": "pnpm -r dev",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },

@@ -1,5 +1,5 @@
 {
-    "name": "@primevue/frontend",
+    "name": "@primechess/frontend",
     "type": "module",
     "private": true,
     "scripts": {
