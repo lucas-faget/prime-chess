@@ -1,0 +1,16 @@
+{
+    "name": "@primechess/chess-lib",
+    "version": "1.0.0",
+    "description": "A TypeScript chess library",
+    "license": "MIT",
+    "author": "lucas-faget",
+    "type": "module",
+    "module": "dist/index.es.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.es.js",
+            "types": "./dist/index.d.ts"
+        }
+    }
+}
