@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Chessboard, Direction, LegalMoves, Piece } from "@primechess/chess-lib";
+import type { Direction, LegalMoves, Piece, Squares } from "@primechess/chess-lib";
 import Square from "~/components/Square.vue";
 
 const props = defineProps<{
     rows: string[];
     columns: string[];
-    chessboard: Chessboard;
+    squares: Squares;
     legalMoves: LegalMoves;
     playerInFrontDirection: Direction;
 }>();
@@ -34,7 +34,7 @@ const isLegalSquare = (square: string): boolean => {
 
 const onSquareClick = (square: string) => {
     if (!fromSquare.value) {
-        const piece: Piece | null = props.chessboard[square] ?? null;
+        const piece: Piece | null = props.squares[square] ?? null;
         if (!piece) return;
         fromSquare.value = square;
         return;
@@ -49,7 +49,7 @@ const onSquareClick = (square: string) => {
         emit("tryMove", fromSquare.value, square);
         fromSquare.value = null;
     } else {
-        const piece: Piece | null = props.chessboard[square] ?? null;
+        const piece: Piece | null = props.squares[square] ?? null;
         fromSquare.value = piece ? square : null;
     }
 };
@@ -61,7 +61,7 @@ const onSquareClick = (square: string) => {
             <template v-for="(column, x) in columns" :key="column">
                 <Square
                     :name="getSquareName(column, row)"
-                    :piece="chessboard[getSquareName(column, row)] ?? null"
+                    :piece="squares[getSquareName(column, row)] ?? null"
                     :isDark="isDarkSquare(x, y)"
                     :isLegal="isLegalSquare(getSquareName(column, row))"
                     @click="onSquareClick(getSquareName(column, row))"
