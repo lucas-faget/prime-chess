@@ -27,7 +27,7 @@ const colorClassNames: SquareColors[] = [
 ];
 
 const defaultSettings: UserSettings = {
-    darkMode: true,
+    darkMode: false,
     chessboardColor: colorClassNames.find((color) => color.name === "blue") ?? colorClassNames[0]!,
     chessboardSpin: false,
     pieceAnimation: true,
@@ -38,19 +38,24 @@ export function useSettings() {
         ...defaultSettings,
     }));
 
-    const isDarkMode = () => {
+    const resetSettings = (): void => {
+        userSettings.value = { ...defaultSettings, darkMode: userSettings.value.darkMode };
+    };
+
+    const isDarkMode = (): boolean => {
         return userSettings.value.darkMode;
     };
 
-    const toggleDarkMode = () => {
+    const toggleDarkMode = (): void => {
         userSettings.value.darkMode = !userSettings.value.darkMode;
+        document.documentElement.classList.toggle("p-dark", userSettings.value.darkMode);
     };
 
-    const getColors = () => {
+    const getColors = (): SquareColors[] => {
         return colorClassNames;
     };
 
-    const getChessboardColor = () => {
+    const getChessboardColor = (): SquareColors => {
         return userSettings.value.chessboardColor;
     };
 
@@ -58,28 +63,34 @@ export function useSettings() {
         userSettings.value.chessboardColor = colors;
     };
 
-    const isChessboardSpinAutomatic = () => {
+    const isChessboardSpinAutomatic = (): boolean => {
         return userSettings.value.chessboardSpin;
     };
 
-    const toggleChessboardSpin = () => {
+    const toggleChessboardSpin = (): void => {
         userSettings.value.chessboardSpin = !userSettings.value.chessboardSpin;
     };
 
-    const isPieceAnimationEnabled = () => {
+    const isPieceAnimationEnabled = (): boolean => {
         return userSettings.value.pieceAnimation;
     };
 
-    const togglePieceAnimation = () => {
+    const togglePieceAnimation = (): void => {
         userSettings.value.pieceAnimation = !userSettings.value.pieceAnimation;
     };
 
-    const resetSettings = () => {
-        userSettings.value = { ...defaultSettings };
-    };
+    onMounted(() => {
+        const hasDarkClass: boolean = document.documentElement.classList.contains("p-dark");
+        const prefersDark: boolean = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        userSettings.value.darkMode = hasDarkClass || prefersDark;
+
+        document.documentElement.classList.toggle("p-dark", userSettings.value.darkMode);
+    });
 
     return {
         userSettings,
+        resetSettings,
         isDarkMode,
         toggleDarkMode,
         getColors,
@@ -89,6 +100,5 @@ export function useSettings() {
         toggleChessboardSpin,
         isPieceAnimationEnabled,
         togglePieceAnimation,
-        resetSettings,
     };
 }
