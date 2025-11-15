@@ -6,24 +6,24 @@ import {
     type HistoryEntry,
     type LegalMoves,
     type Move,
+    type Player,
     type Squares,
 } from "@primechess/chess-lib";
 
 export function useLocalChess() {
     const game = ref<Chess>(chess.new());
-    let board = ref<Chessboard>(game.value.getChessboard());
-    let squares = ref<Squares>(board.value.getSquares());
-
-    const rows = computed<string[]>(() => {
-        return playerInFrontIndex.value === 0 ? [...board.value.ranks].reverse() : board.value.ranks;
-    });
-
-    const columns = computed<string[]>(() => {
-        return playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse();
-    });
-
+    const players: Player[] = game.value.players;
+    const board = ref<Chessboard>(game.value.getChessboard());
+    const squares = ref<Squares>(board.value.getSquares());
+    const rows = computed<string[]>(() =>
+        playerInFrontIndex.value === 0 ? [...board.value.ranks].reverse() : board.value.ranks,
+    );
+    const columns = computed<string[]>(() =>
+        playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
+    );
     const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
     const history = ref<HistoryEntry[]>(game.value.getHistory());
+    const algebraicMoves = ref<string[]>([]);
     const lastHalfmoveIndex = ref<number>(0);
     const activeHalfmoveIndex = ref<number>(0);
     const playerInFrontIndex = ref<number>(0);
@@ -39,6 +39,7 @@ export function useLocalChess() {
             board.value.carryOutMove(move);
             squares.value = board.value.getSquares();
             legalMoves.value = game.value.getLegalMoves();
+            algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
             lastHalfmoveIndex.value++;
             activeHalfmoveIndex.value++;
         }
@@ -94,6 +95,7 @@ export function useLocalChess() {
             board.value.undoMove(move);
             squares.value = board.value.getSquares();
             legalMoves.value = game.value.getLegalMoves();
+            algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
             lastHalfmoveIndex.value--;
             activeHalfmoveIndex.value--;
         }
@@ -101,16 +103,20 @@ export function useLocalChess() {
     }
 
     return {
+        players,
         rows,
         columns,
         squares,
         legalMoves,
+        algebraicMoves,
+        activeHalfmoveIndex,
         playerInFrontIndex,
         playerInFrontDirection,
 
         isLegalMove,
         tryMove,
         spinChessboard,
+        goToMove,
         goToFirstMove,
         goToPreviousMove,
         goToNextMove,
