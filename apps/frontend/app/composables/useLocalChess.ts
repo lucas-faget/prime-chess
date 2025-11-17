@@ -1,3 +1,4 @@
+import { useSettings } from "./useSettings";
 import {
     chess,
     type Chess,
@@ -11,6 +12,8 @@ import {
 } from "@primechess/chess-lib";
 
 export function useLocalChess() {
+    const { isChessboardSpinAutomatic } = useSettings();
+
     const game = ref<Chess>(chess.new());
     const players: Player[] = game.value.players;
     const board = ref<Chessboard>(game.value.getChessboard());
@@ -26,6 +29,7 @@ export function useLocalChess() {
     const algebraicMoves = ref<string[]>([]);
     const lastHalfmoveIndex = ref<number>(0);
     const activeHalfmoveIndex = ref<number>(0);
+    const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
     const playerInFrontIndex = ref<number>(0);
     const playerInFrontDirection = computed<Direction>(() => game.value.players[playerInFrontIndex.value]!.direction);
 
@@ -42,6 +46,10 @@ export function useLocalChess() {
             algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
             lastHalfmoveIndex.value++;
             activeHalfmoveIndex.value++;
+            activePlayerIndex.value = game.value.getActivePlayerIndex();
+            if (isChessboardSpinAutomatic()) {
+                playerInFrontIndex.value = activePlayerIndex.value;
+            }
         }
         return move;
     }
@@ -98,6 +106,10 @@ export function useLocalChess() {
             algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
             lastHalfmoveIndex.value--;
             activeHalfmoveIndex.value--;
+            activePlayerIndex.value = game.value.getActivePlayerIndex();
+            if (isChessboardSpinAutomatic()) {
+                playerInFrontIndex.value = activePlayerIndex.value;
+            }
         }
         return move;
     }
