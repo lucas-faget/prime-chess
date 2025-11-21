@@ -28,6 +28,9 @@ importers:
             "@adonisjs/lucid":
                 specifier: ^21.8.0
                 version: 21.8.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.7.2)(pg@8.16.3)
+            "@primechess/chess-lib":
+                specifier: workspace:*
+                version: link:../../packages/chess-lib
             "@vinejs/vine":
                 specifier: ^3.0.1
                 version: 3.0.1
