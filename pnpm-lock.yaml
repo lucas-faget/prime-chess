@@ -28,6 +28,9 @@ importers:
             "@adonisjs/lucid":
                 specifier: ^21.8.0
                 version: 21.8.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.7.2)(pg@8.16.3)
+            "@adonisjs/transmit":
+                specifier: ^2.0.2
+                version: 2.0.2(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1))(ioredis@5.8.2)
             "@primechess/chess-lib":
                 specifier: workspace:*
                 version: link:../../packages/chess-lib
@@ -98,6 +101,9 @@ importers:
 
     apps/frontend:
         dependencies:
+            "@adonisjs/transmit-client":
+                specifier: ^1.0.0
+                version: 1.0.0
             "@primechess/chess-lib":
                 specifier: workspace:*
                 version: link:../../packages/chess-lib
@@ -378,6 +384,22 @@ packages:
             }
         engines: { node: ">=18.16.0" }
 
+    "@adonisjs/transmit-client@1.0.0":
+        resolution:
+            {
+                integrity: sha512-S8P4ouxoDRpHA6iEu13OxzVuG9aV6eObxBYFlsAouIDmqoiUjcgDWUJrtI26nediV2nGvaAuK98ObIEy1UWGFg==,
+            }
+        engines: { node: ">=18.16.0" }
+
+    "@adonisjs/transmit@2.0.2":
+        resolution:
+            {
+                integrity: sha512-Oyh4S1773N1Ams9mmFM2pplLx8R0IdYwqSTBLRgeDWaR+cyWrL9ZQvF2q7GqIjNzZsXuDgMdPuLlNo+69zIZIg==,
+            }
+        engines: { node: ">=20.11.1" }
+        peerDependencies:
+            "@adonisjs/core": ^6.2.0
+
     "@adonisjs/tsconfig@1.4.1":
         resolution:
             {
@@ -603,6 +625,25 @@ packages:
             {
                 integrity: sha512-5L/uBxmjaCIX5h8Z+uu+kA9BQLkc/Wl06UGR5ajNRxu+/XjonB5i8JpgFMrPj3LXTCPA0pv8yxUvbUi+QthGGA==,
             }
+
+    "@boringnode/bus@0.7.1":
+        resolution:
+            {
+                integrity: sha512-F74H1XxpX0MSP2xfDv5cTuP9OgC4HHG+K2w8kNRj/k104D/aBMC7mcEcntgIZMX8QgcRQsREToP5kPH5kZOO/Q==,
+            }
+        engines: { node: ">=20.6" }
+        peerDependencies:
+            ioredis: ^5.0.0
+        peerDependenciesMeta:
+            ioredis:
+                optional: true
+
+    "@boringnode/transmit@0.2.2":
+        resolution:
+            {
+                integrity: sha512-xIBg5PKqqgawNsXffq1P+BpRDjplfwOspwcFH5wfSN6uVcd5hYGC9lJpcXa1oL3wkQZimtiJhrTHhZZtgh2lqA==,
+            }
+        engines: { node: ">=20.11.1" }
 
     "@chevrotain/cst-dts-gen@11.0.3":
         resolution:
@@ -5931,6 +5972,13 @@ packages:
                 integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==,
             }
 
+    matchit@1.1.0:
+        resolution:
+            {
+                integrity: sha512-+nGYoOlfHmxe5BW5tE0EMJppXEwdSf8uBA1GTZC7Q77kbT35+VKLYJMzVNWCHSsga1ps1tPYFtFyvxvKzWVmMA==,
+            }
+        engines: { node: ">=6" }
+
     math-intrinsics@1.1.0:
         resolution:
             {
@@ -6332,6 +6380,13 @@ packages:
             }
         engines: { node: ^14.16.0 || >=16.10.0 }
         hasBin: true
+
+    object-hash@3.0.0:
+        resolution:
+            {
+                integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==,
+            }
+        engines: { node: ">= 6" }
 
     object-inspect@1.13.4:
         resolution:
@@ -9190,6 +9245,15 @@ snapshots:
             "@poppinss/colors": 4.1.5
             string-width: 7.2.0
 
+    "@adonisjs/transmit-client@1.0.0": {}
+
+    "@adonisjs/transmit@2.0.2(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1))(ioredis@5.8.2)":
+        dependencies:
+            "@adonisjs/core": 6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1)
+            "@boringnode/transmit": 0.2.2(ioredis@5.8.2)
+        transitivePeerDependencies:
+            - ioredis
+
     "@adonisjs/tsconfig@1.4.1": {}
 
     "@antfu/install-pkg@0.4.1":
@@ -9372,6 +9436,23 @@ snapshots:
             "@babel/helper-validator-identifier": 7.28.5
 
     "@borewit/text-codec@0.1.1": {}
+
+    "@boringnode/bus@0.7.1(ioredis@5.8.2)":
+        dependencies:
+            "@paralleldrive/cuid2": 2.3.1
+            "@poppinss/utils": 6.10.1
+            object-hash: 3.0.0
+        optionalDependencies:
+            ioredis: 5.8.2
+
+    "@boringnode/transmit@0.2.2(ioredis@5.8.2)":
+        dependencies:
+            "@boringnode/bus": 0.7.1(ioredis@5.8.2)
+            "@poppinss/utils": 6.10.1
+            emittery: 1.2.0
+            matchit: 1.1.0
+        transitivePeerDependencies:
+            - ioredis
 
     "@chevrotain/cst-dts-gen@11.0.3":
         dependencies:
@@ -12592,6 +12673,10 @@ snapshots:
 
     make-error@1.3.6: {}
 
+    matchit@1.1.0:
+        dependencies:
+            "@arr/every": 1.0.1
+
     math-intrinsics@1.1.0: {}
 
     mdn-data@2.0.28: {}
@@ -12964,6 +13049,8 @@ snapshots:
             pathe: 2.0.3
             pkg-types: 2.3.0
             tinyexec: 1.0.1
+
+    object-hash@3.0.0: {}
 
     object-inspect@1.13.4: {}
 

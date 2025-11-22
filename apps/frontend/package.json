@@ -10,6 +10,7 @@
         "postinstall": "nuxt prepare"
     },
     "dependencies": {
+        "@adonisjs/transmit-client": "^1.0.0",
         "@primechess/chess-lib": "workspace:*",
         "@primeuix/themes": "^1.2.5",
         "@tailwindcss/vite": "^4.1.17",
