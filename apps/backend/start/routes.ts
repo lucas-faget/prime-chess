@@ -8,9 +8,11 @@
 */
 
 import router from "@adonisjs/core/services/router";
+import transmit from "@adonisjs/transmit/services/main";
 
-router.get("/", async () => {
-    return {
-        hello: "world",
-    };
-});
+transmit.registerRoutes();
+const GamesController = () => import("#controllers/games_controller");
+
+router.post("/games/create", [GamesController, "create"]);
+router.post("/games/:id/join", [GamesController, "join"]);
+router.post("/games/:id/move", [GamesController, "move"]);
