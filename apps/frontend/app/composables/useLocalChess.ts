@@ -1,6 +1,7 @@
 import { useSettings } from "./useSettings";
 import {
     chess,
+    Directions,
     type Chess,
     type Chessboard,
     type Direction,
@@ -16,22 +17,24 @@ export function useLocalChess() {
 
     const game = ref<Chess>(chess.new());
     const players: Player[] = game.value.players;
+    const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
     const board = ref<Chessboard>(game.value.getChessboard());
     const squares = ref<Squares>(board.value.getSquares());
+    const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
+    const history = ref<HistoryEntry[]>(game.value.getHistory());
+    const algebraicMoves = ref<string[]>([]);
+    const lastHalfmoveIndex = ref<number>(0);
+    const activeHalfmoveIndex = ref<number>(0);
+    const playerInFrontIndex = ref<number>(0);
+    const playerInFrontDirection = computed<Direction>(
+        () => game.value.players[playerInFrontIndex.value]?.direction ?? Directions.Up,
+    );
     const rows = computed<string[]>(() =>
         playerInFrontIndex.value === 0 ? [...board.value.ranks].reverse() : board.value.ranks,
     );
     const columns = computed<string[]>(() =>
         playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
     );
-    const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
-    const history = ref<HistoryEntry[]>(game.value.getHistory());
-    const algebraicMoves = ref<string[]>([]);
-    const lastHalfmoveIndex = ref<number>(0);
-    const activeHalfmoveIndex = ref<number>(0);
-    const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
-    const playerInFrontIndex = ref<number>(0);
-    const playerInFrontDirection = computed<Direction>(() => game.value.players[playerInFrontIndex.value]!.direction);
 
     function isLegalMove(from: string, to: string): boolean {
         return game.value.isLegalMove(from, to);
