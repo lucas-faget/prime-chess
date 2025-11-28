@@ -113,6 +113,9 @@ importers:
             "@tailwindcss/vite":
                 specifier: ^4.1.17
                 version: 4.1.17(vite@7.1.12(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.1))
+            gsap:
+                specifier: ^3.13.0
+                version: 3.13.0
             nuxt:
                 specifier: ^4.2.0
                 version: 4.2.0(@parcel/watcher@2.5.1)(@types/node@22.18.12)(@vue/compiler-sfc@3.5.22)(db0@0.3.4)(eslint@9.38.0(jiti@2.6.1))(ioredis@5.8.2)(lightningcss@1.30.2)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.52.5)(terser@5.44.0)(typescript@5.8.3)(vite@7.1.12(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.1))(yaml@2.8.1)
@@ -5103,6 +5106,12 @@ packages:
         resolution:
             {
                 integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==,
+            }
+
+    gsap@3.13.0:
+        resolution:
+            {
+                integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==,
             }
 
     gzip-size@7.0.0:
@@ -12219,6 +12228,8 @@ snapshots:
     graceful-fs@4.2.11: {}
 
     graphemer@1.4.0: {}
+
+    gsap@3.13.0: {}
 
     gzip-size@7.0.0:
         dependencies:
