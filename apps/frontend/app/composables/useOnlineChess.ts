@@ -36,6 +36,7 @@ export async function useOnlineChess() {
     const columns = computed<string[]>(() =>
         playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
     );
+    const activeMove = computed<Move | null>(() => history.value[activeHalfmoveIndex.value]?.move ?? null);
 
     onMounted(async () => {
         transmit = new Transmit({
@@ -165,6 +166,7 @@ export async function useOnlineChess() {
         activeHalfmoveIndex,
         playerInFrontIndex,
         playerInFrontDirection,
+        activeMove,
 
         join,
         isLegalMove,

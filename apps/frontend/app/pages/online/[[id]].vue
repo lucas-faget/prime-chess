@@ -14,6 +14,7 @@ const {
     algebraicMoves,
     activeHalfmoveIndex,
     playerInFrontDirection,
+    activeMove,
     join,
     tryMove,
     spinChessboard,
@@ -40,6 +41,7 @@ onMounted(async () => {
                     :legal-moves="legalMoves"
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
+                    :active-move="activeMove"
                     @try-move="tryMove"
                 />
             </div>

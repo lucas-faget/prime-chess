@@ -10,6 +10,7 @@ const {
     algebraicMoves,
     activeHalfmoveIndex,
     playerInFrontDirection,
+    activeMove,
     tryMove,
     spinChessboard,
     goToMove,
@@ -31,6 +32,7 @@ const {
                     :legal-moves="legalMoves"
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
+                    :active-move="activeMove"
                     @try-move="tryMove"
                 />
             </div>
