@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { Piece } from "@primechess/chess-lib";
-import { useSettings } from "~/composables/useSettings";
 import type { SquareColors } from "~/types/SquareColor";
+import { useSettings } from "~/composables/useSettings";
+import { gsap } from "gsap";
+import Draggable from "gsap/Draggable";
+gsap.registerPlugin(Draggable);
 const { getChessboardColor } = useSettings();
 
 const props = withDefaults(
@@ -20,6 +23,15 @@ const props = withDefaults(
     },
 );
 
+const emit = defineEmits<{
+    (e: "dragStart", from: string): void;
+    (e: "dragEnd", from: string, to: string | null): void;
+}>();
+
+let draggable: Draggable | undefined = undefined;
+let boardEl: HTMLElement | null = null;
+const pieceEl = ref<HTMLElement | null>(null);
+
 const colorClass = computed(() => {
     const colors: SquareColors = getChessboardColor();
 
@@ -35,12 +47,58 @@ const colorClass = computed(() => {
         return colors.light;
     }
 });
+
+onMounted(() => {
+    boardEl = document.getElementById("chessboard");
+});
+
+watch(
+    () => props.piece,
+    async (newPiece, oldPiece) => {
+        if (oldPiece?.name === newPiece?.name && oldPiece?.color === newPiece?.color) {
+            return;
+        }
+
+        await nextTick();
+
+        draggable?.kill();
+
+        if (newPiece && pieceEl.value) {
+            draggable = Draggable.create(pieceEl.value, {
+                type: "x,y",
+                bounds: boardEl,
+                onDragStart() {
+                    emit("dragStart", props.name);
+                },
+                onDragEnd() {
+                    const elements = document.elementsFromPoint(this.pointerX, this.pointerY);
+                    const square = elements.find((el) => el.hasAttribute("data-square")) as HTMLElement | undefined;
+                    const to: string | null = square?.dataset?.square ?? null;
+
+                    emit("dragEnd", props.name, to);
+
+                    gsap.to(pieceEl.value, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.2,
+                    });
+                },
+            })[0];
+        }
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(() => {
+    draggable?.kill();
+});
 </script>
 
 <template>
     <div :data-square="name" :class="colorClass">
         <img
             v-if="piece"
+            ref="pieceEl"
             class="relative aspect-square h-full w-full"
             :src="getPieceImage(piece.color, piece.name)"
             :alt="piece.name"

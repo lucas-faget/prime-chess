@@ -43,7 +43,7 @@ const isActiveSquare = (square: string): boolean => {
     return square === props.activeMove.fromSquare || square === props.activeMove.toSquare;
 };
 
-const onSquareClick = (square: string) => {
+const onSquareClick = (square: string): void => {
     if (!fromSquare.value) {
         const piece: Piece | null = props.squares[square] ?? null;
         if (!piece) return;
@@ -64,10 +64,27 @@ const onSquareClick = (square: string) => {
         fromSquare.value = piece ? square : null;
     }
 };
+
+const onDragStart = (from: string): void => {
+    fromSquare.value = from;
+};
+
+const onDragEnd = (from: string, to: string | null): void => {
+    if (!to) {
+        fromSquare.value = null;
+        return;
+    }
+
+    if (isLegalSquare(to)) {
+        emit("tryMove", from, to);
+    }
+
+    fromSquare.value = null;
+};
 </script>
 
 <template>
-    <div class="relative grid aspect-square h-full w-full" :style="gridStyle">
+    <div id="chessboard" class="relative grid aspect-square h-full w-full" :style="gridStyle">
         <template v-for="(row, y) in rows" :key="row">
             <template v-for="(column, x) in columns" :key="column">
                 <Square
@@ -77,6 +94,8 @@ const onSquareClick = (square: string) => {
                     :isLegal="isLegalSquare(getSquareName(column, row))"
                     :isActive="isActiveSquare(getSquareName(column, row))"
                     @click="onSquareClick(getSquareName(column, row))"
+                    @drag-start="onDragStart"
+                    @drag-end="onDragEnd"
                 />
             </template>
         </template>
