@@ -37,6 +37,9 @@ export async function useOnlineChess() {
         playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
     );
     const activeMove = computed<Move | null>(() => history.value[activeHalfmoveIndex.value]?.move ?? null);
+    const checkedSquare = computed<string | null>(
+        () => history.value[activeHalfmoveIndex.value]?.checkedSquare ?? null,
+    );
 
     onMounted(async () => {
         transmit = new Transmit({
@@ -167,6 +170,7 @@ export async function useOnlineChess() {
         playerInFrontIndex,
         playerInFrontDirection,
         activeMove,
+        checkedSquare,
 
         join,
         isLegalMove,

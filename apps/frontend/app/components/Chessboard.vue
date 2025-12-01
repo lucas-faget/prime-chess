@@ -10,9 +10,11 @@ const props = withDefaults(
         legalMoves: LegalMoves;
         playerInFrontDirection: Direction;
         activeMove?: Move | null;
+        checkedSquare?: string | null;
     }>(),
     {
         activeMove: null,
+        checkedSquare: null,
     },
 );
 
@@ -41,6 +43,10 @@ const isLegalSquare = (square: string): boolean => {
 const isActiveSquare = (square: string): boolean => {
     if (!props.activeMove) return false;
     return square === props.activeMove.fromSquare || square === props.activeMove.toSquare;
+};
+
+const isCheckedSquare = (square: string): boolean => {
+    return square === props.checkedSquare;
 };
 
 const onSquareClick = (square: string): void => {
@@ -93,6 +99,7 @@ const onDragEnd = (from: string, to: string | null): void => {
                     :isDark="isDarkSquare(x, y)"
                     :isLegal="isLegalSquare(getSquareName(column, row))"
                     :isActive="isActiveSquare(getSquareName(column, row))"
+                    :isChecked="isCheckedSquare(getSquareName(column, row))"
                     @click="onSquareClick(getSquareName(column, row))"
                     @drag-start="onDragStart"
                     @drag-end="onDragEnd"

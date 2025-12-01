@@ -36,6 +36,9 @@ export function useLocalChess() {
         playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
     );
     const activeMove = computed<Move | null>(() => history.value[activeHalfmoveIndex.value]?.move ?? null);
+    const checkedSquare = computed<string | null>(
+        () => history.value[activeHalfmoveIndex.value]?.checkedSquare ?? null,
+    );
 
     function isLegalMove(from: string, to: string): boolean {
         return game.value.isLegalMove(from, to);
@@ -129,6 +132,7 @@ export function useLocalChess() {
         playerInFrontIndex,
         playerInFrontDirection,
         activeMove,
+        checkedSquare,
 
         isLegalMove,
         tryMove,

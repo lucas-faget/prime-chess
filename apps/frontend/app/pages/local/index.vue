@@ -11,6 +11,7 @@ const {
     activeHalfmoveIndex,
     playerInFrontDirection,
     activeMove,
+    checkedSquare,
     tryMove,
     spinChessboard,
     goToMove,
@@ -33,6 +34,7 @@ const {
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
                     :active-move="activeMove"
+                    :checked-square="checkedSquare"
                     @try-move="tryMove"
                 />
             </div>

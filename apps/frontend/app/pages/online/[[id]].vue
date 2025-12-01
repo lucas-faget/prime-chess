@@ -15,6 +15,7 @@ const {
     activeHalfmoveIndex,
     playerInFrontDirection,
     activeMove,
+    checkedSquare,
     join,
     tryMove,
     spinChessboard,
@@ -42,6 +43,7 @@ onMounted(async () => {
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
                     :active-move="activeMove"
+                    :checked-square="checkedSquare"
                     @try-move="tryMove"
                 />
             </div>

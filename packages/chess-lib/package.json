@@ -1,6 +1,6 @@
 {
     "name": "@primechess/chess-lib",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "A TypeScript chess library",
     "license": "MIT",
     "author": "lucas-faget",
