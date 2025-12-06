@@ -107,6 +107,9 @@ importers:
             "@primechess/chess-lib":
                 specifier: workspace:*
                 version: link:../../packages/chess-lib
+            "@primechess/types":
+                specifier: workspace:*
+                version: link:../../packages/types
             "@primeuix/themes":
                 specifier: ^1.2.5
                 version: 1.2.5
@@ -143,6 +146,8 @@ importers:
                 version: 4.4.1(@babel/parser@7.28.5)(magicast@0.3.5)(vue@3.5.22(typescript@5.8.3))
 
     packages/chess-lib: {}
+
+    packages/types: {}
 
 packages:
     "@adobe/css-tools@4.4.4":
