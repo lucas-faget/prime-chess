@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Direction, LegalMoves, Move, Piece, Squares } from "@primechess/chess-lib";
-import Square from "~/components/Square.vue";
 
 const props = withDefaults(
     defineProps<{

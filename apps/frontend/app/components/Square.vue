@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Piece } from "@primechess/chess-lib";
 import type { SquareColors } from "~/types/SquareColor";
-import { useSettings } from "~/composables/useSettings";
 import { gsap } from "gsap";
 import Draggable from "gsap/Draggable";
 gsap.registerPlugin(Draggable);

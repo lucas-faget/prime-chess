@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import Chessboard from "~/components/Chessboard.vue";
-import MoveHistory from "~/components/MoveHistory.vue";
-
 const {
     rows,
     columns,

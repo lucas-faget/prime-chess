@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import Chessboard from "~/components/Chessboard.vue";
-import MoveHistory from "~/components/MoveHistory.vue";
-
 const route = useRoute();
 const id = route.params.id;
 const gameId: string | undefined = Array.isArray(id) ? id[0] : id;
