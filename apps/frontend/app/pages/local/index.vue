@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import type { Move } from "@primechess/chess-lib";
+
+definePageMeta({
+    middleware: "game-exists",
+});
+
+const { game, storeMove } = useChessStore();
+
 const {
     rows,
     columns,
@@ -7,6 +15,7 @@ const {
     algebraicMoves,
     activeHalfmoveIndex,
     playerInFrontDirection,
+    fen,
     activeMove,
     checkedSquare,
     tryMove,
@@ -17,7 +26,22 @@ const {
     goToNextMove,
     goToLastMove,
     cancelLastMove,
-} = useLocalChess();
+} = useLocalChess(game?.state ?? null);
+
+if (game && !game.state.initialFen) {
+    game.state.initialFen = fen.value;
+}
+
+function handleTryMove(from: string, to: string): void {
+    const move: Move | null = tryMove(from, to);
+    if (move) storeMove(move);
+}
+
+function handleCancelLastMove(): void {
+    if (cancelLastMove()) {
+        game?.state.moves.pop();
+    }
+}
 </script>
 
 <template>
@@ -32,7 +56,7 @@ const {
                     :player-in-front-direction="playerInFrontDirection"
                     :active-move="activeMove"
                     :checked-square="checkedSquare"
-                    @try-move="tryMove"
+                    @try-move="handleTryMove"
                 />
             </div>
         </div>
@@ -47,7 +71,7 @@ const {
                             @go-to-move="goToMove"
                         />
                     </div>
-                    <Button label="Cancel last move" variant="text" severity="danger" @click="cancelLastMove" />
+                    <Button label="Cancel last move" variant="text" severity="danger" @click="handleCancelLastMove" />
                 </div>
             </Panel>
 

@@ -1,3 +1,4 @@
+import { ChessVariant, type GameState } from "@primechess/types";
 import { useSettings } from "./useSettings";
 import {
     chess,
@@ -12,19 +13,19 @@ import {
     type Squares,
 } from "@primechess/chess-lib";
 
-export function useLocalChess() {
+export function useLocalChess(state: GameState | null = null) {
     const { isChessboardSpinAutomatic } = useSettings();
 
-    const game = ref<Chess>(chess.new());
+    const game = ref<Chess>(initGame(state));
     const players: Player[] = game.value.players;
     const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
     const board = ref<Chessboard>(game.value.getChessboard());
     const squares = ref<Squares>(board.value.getSquares());
     const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
     const history = ref<HistoryEntry[]>(game.value.getHistory());
-    const algebraicMoves = ref<string[]>([]);
-    const lastHalfmoveIndex = ref<number>(0);
-    const activeHalfmoveIndex = ref<number>(0);
+    const algebraicMoves = ref<string[]>(history.value.slice(1).map((entry) => entry.move?.algebraic ?? ""));
+    const lastHalfmoveIndex = ref<number>(history.value.length - 1);
+    const activeHalfmoveIndex = ref<number>(lastHalfmoveIndex.value);
     const playerInFrontIndex = ref<number>(0);
     const playerInFrontDirection = computed<Direction>(
         () => game.value.players[playerInFrontIndex.value]?.direction ?? Directions.Up,
@@ -35,10 +36,29 @@ export function useLocalChess() {
     const columns = computed<string[]>(() =>
         playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
     );
+    const fen = computed<string | null>(() => history.value[lastHalfmoveIndex.value]?.fen ?? null);
     const activeMove = computed<Move | null>(() => history.value[activeHalfmoveIndex.value]?.move ?? null);
     const checkedSquare = computed<string | null>(
         () => history.value[activeHalfmoveIndex.value]?.checkedSquare ?? null,
     );
+
+    function initGame(state: GameState | null = null): Chess {
+        if (state?.initialFen) {
+            const c: Chess = chess.fromFen(state.initialFen);
+            for (const move of state.moves) {
+                c.tryMove(move.from, move.to);
+            }
+            return c;
+        } else {
+            switch (state?.variant) {
+                case ChessVariant.FischerRandom:
+                    return chess.fischerRandom();
+                case ChessVariant.Standard:
+                default:
+                    return chess.new();
+            }
+        }
+    }
 
     function isLegalMove(from: string, to: string): boolean {
         return game.value.isLegalMove(from, to);
@@ -131,6 +151,7 @@ export function useLocalChess() {
         activeHalfmoveIndex,
         playerInFrontIndex,
         playerInFrontDirection,
+        fen,
         activeMove,
         checkedSquare,
 
