@@ -19,14 +19,14 @@ const {
     activeMove,
     checkedSquare,
     tryMove,
+    cancelLastMove,
     spinChessboard,
     goToMove,
     goToFirstMove,
     goToPreviousMove,
     goToNextMove,
     goToLastMove,
-    cancelLastMove,
-} = useLocalChess(game?.state ?? null);
+} = useChessLocal(game?.state ?? null);
 
 if (game && !game.state.initialFen) {
     game.state.initialFen = fen.value;

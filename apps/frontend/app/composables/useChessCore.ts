@@ -13,42 +13,47 @@ import {
     type Squares,
 } from "@primechess/chess-lib";
 
-export function useLocalChess(state: GameState | null = null) {
+export function useChessCore(state: GameState | null = null) {
     const { isChessboardSpinAutomatic } = useSettings();
 
+    // Game
     const game = ref<Chess>(initGame(state));
     const players: Player[] = game.value.players;
     const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
-    const board = ref<Chessboard>(game.value.getChessboard());
-    const squares = ref<Squares>(board.value.getSquares());
     const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
+
+    // History
     const history = ref<HistoryEntry[]>(game.value.getHistory());
     const algebraicMoves = ref<string[]>(history.value.slice(1).map((entry) => entry.move?.algebraic ?? ""));
     const lastHalfmoveIndex = ref<number>(history.value.length - 1);
     const activeHalfmoveIndex = ref<number>(lastHalfmoveIndex.value);
-    const playerInFrontIndex = ref<number>(0);
-    const playerInFrontDirection = computed<Direction>(
-        () => game.value.players[playerInFrontIndex.value]?.direction ?? Directions.Up,
-    );
-    const rows = computed<string[]>(() =>
-        playerInFrontIndex.value === 0 ? [...board.value.ranks].reverse() : board.value.ranks,
-    );
-    const columns = computed<string[]>(() =>
-        playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
-    );
     const fen = computed<string | null>(() => history.value[lastHalfmoveIndex.value]?.fen ?? null);
     const activeMove = computed<Move | null>(() => history.value[activeHalfmoveIndex.value]?.move ?? null);
     const checkedSquare = computed<string | null>(
         () => history.value[activeHalfmoveIndex.value]?.checkedSquare ?? null,
     );
 
+    // Board
+    const board = ref<Chessboard>(game.value.getChessboard());
+    const squares = ref<Squares>(board.value.getSquares());
+    const rows = computed<string[]>(() =>
+        playerInFrontIndex.value === 0 ? [...board.value.ranks].reverse() : board.value.ranks,
+    );
+    const columns = computed<string[]>(() =>
+        playerInFrontIndex.value === 0 ? board.value.files : [...board.value.files].reverse(),
+    );
+    const playerInFrontIndex = ref<number>(activePlayerIndex.value);
+    const playerInFrontDirection = computed<Direction>(
+        () => game.value.players[playerInFrontIndex.value]?.direction ?? Directions.Up,
+    );
+
     function initGame(state: GameState | null = null): Chess {
         if (state?.initialFen) {
-            const c: Chess = chess.fromFen(state.initialFen);
+            const game: Chess = chess.fromFen(state.initialFen);
             for (const move of state.moves) {
-                c.tryMove(move.from, move.to);
+                game.tryMove(move.from, move.to);
             }
-            return c;
+            return game;
         } else {
             switch (state?.variant) {
                 case ChessVariant.FischerRandom:
@@ -60,6 +65,26 @@ export function useLocalChess(state: GameState | null = null) {
         }
     }
 
+    function isActiveMoveTheLast(): boolean {
+        return activeHalfmoveIndex.value === lastHalfmoveIndex.value;
+    }
+
+    function updateInternalState(): void {
+        legalMoves.value = game.value.getLegalMoves();
+        activePlayerIndex.value = game.value.getActivePlayerIndex();
+        algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
+        if (isActiveMoveTheLast()) {
+            lastHalfmoveIndex.value = history.value.length - 1;
+            activeHalfmoveIndex.value = lastHalfmoveIndex.value;
+            squares.value = board.value.getSquares();
+            if (isChessboardSpinAutomatic()) {
+                playerInFrontIndex.value = activePlayerIndex.value;
+            }
+        } else {
+            lastHalfmoveIndex.value = history.value.length - 1;
+        }
+    }
+
     function isLegalMove(from: string, to: string): boolean {
         return game.value.isLegalMove(from, to);
     }
@@ -67,16 +92,21 @@ export function useLocalChess(state: GameState | null = null) {
     function tryMove(from: string, to: string): Move | null {
         const move = game.value.tryMove(from, to);
         if (move) {
-            board.value.carryOutMove(move);
-            squares.value = board.value.getSquares();
-            legalMoves.value = game.value.getLegalMoves();
-            algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
-            lastHalfmoveIndex.value++;
-            activeHalfmoveIndex.value++;
-            activePlayerIndex.value = game.value.getActivePlayerIndex();
-            if (isChessboardSpinAutomatic()) {
-                playerInFrontIndex.value = activePlayerIndex.value;
+            if (isActiveMoveTheLast()) {
+                board.value.carryOutMove(move);
             }
+            updateInternalState();
+        }
+        return move;
+    }
+
+    function cancelLastMove(): Move | null {
+        const move = game.value.cancelLastMove();
+        if (move) {
+            if (isActiveMoveTheLast()) {
+                board.value.undoMove(move);
+            }
+            updateInternalState();
         }
         return move;
     }
@@ -124,45 +154,28 @@ export function useLocalChess(state: GameState | null = null) {
         }
     }
 
-    function cancelLastMove(): Move | null {
-        const move = game.value.cancelLastMove();
-        if (move) {
-            board.value.undoMove(move);
-            squares.value = board.value.getSquares();
-            legalMoves.value = game.value.getLegalMoves();
-            algebraicMoves.value = history.value.slice(1).map((entry) => entry.move?.algebraic ?? "");
-            lastHalfmoveIndex.value--;
-            activeHalfmoveIndex.value--;
-            activePlayerIndex.value = game.value.getActivePlayerIndex();
-            if (isChessboardSpinAutomatic()) {
-                playerInFrontIndex.value = activePlayerIndex.value;
-            }
-        }
-        return move;
-    }
-
     return {
         players,
-        rows,
-        columns,
-        squares,
+        activePlayerIndex,
         legalMoves,
         algebraicMoves,
         activeHalfmoveIndex,
-        playerInFrontIndex,
-        playerInFrontDirection,
         fen,
         activeMove,
         checkedSquare,
+        squares,
+        rows,
+        columns,
+        playerInFrontDirection,
 
         isLegalMove,
         tryMove,
+        cancelLastMove,
         spinChessboard,
         goToMove,
         goToFirstMove,
         goToPreviousMove,
         goToNextMove,
         goToLastMove,
-        cancelLastMove,
     };
 }
