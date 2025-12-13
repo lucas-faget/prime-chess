@@ -6,12 +6,15 @@ const props = withDefaults(
         rows: string[];
         columns: string[];
         squares: Squares;
-        legalMoves: LegalMoves;
         playerInFrontDirection: Direction;
+        legalMoves?: LegalMoves;
+        canMove?: boolean;
         activeMove?: Move | null;
         checkedSquare?: string | null;
     }>(),
     {
+        legalMoves: () => ({}),
+        canMove: false,
         activeMove: null,
         checkedSquare: null,
     },
@@ -35,6 +38,7 @@ const isDarkSquare = (x: number, y: number): boolean =>
     props.playerInFrontDirection.dy === 0 ? (x + y) % 2 === 0 : (x + y) % 2 !== 0;
 
 const isLegalSquare = (square: string): boolean => {
+    if (!props.canMove) return false;
     if (!fromSquare.value) return false;
     return !!props.legalMoves[fromSquare.value]?.[square];
 };
@@ -49,6 +53,10 @@ const isCheckedSquare = (square: string): boolean => {
 };
 
 const onSquareClick = (square: string): void => {
+    if (!props.canMove) {
+        return;
+    }
+
     if (!fromSquare.value) {
         const piece: Piece | null = props.squares[square] ?? null;
         if (!piece) return;

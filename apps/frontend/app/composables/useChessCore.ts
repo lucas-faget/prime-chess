@@ -21,6 +21,7 @@ export function useChessCore(state: GameState | null = null) {
     const players: Player[] = game.value.players;
     const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
     const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
+    const canMove = computed<boolean>(() => isActiveMoveTheLast());
 
     // History
     const history = ref<HistoryEntry[]>(game.value.getHistory());
@@ -158,6 +159,7 @@ export function useChessCore(state: GameState | null = null) {
         players,
         activePlayerIndex,
         legalMoves,
+        canMove,
         algebraicMoves,
         activeHalfmoveIndex,
         fen,

@@ -12,6 +12,7 @@ const {
     columns,
     squares,
     legalMoves,
+    canMove,
     algebraicMoves,
     activeHalfmoveIndex,
     playerInFrontDirection,
@@ -51,9 +52,10 @@ function handleCancelLastMove(): void {
                 <Chessboard
                     :rows="rows"
                     :columns="columns"
-                    :legal-moves="legalMoves"
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
+                    :legal-moves="legalMoves"
+                    :can-move="canMove"
                     :active-move="activeMove"
                     :checked-square="checkedSquare"
                     @try-move="handleTryMove"
