@@ -1,7 +1,7 @@
 import type { HttpContext } from "@adonisjs/core/http";
 import transmit from "@adonisjs/transmit/services/main";
 import { Game } from "../types/Game.js";
-import { chess } from "@primechess/chess-lib";
+import { chess, HistoryEntry } from "@primechess/chess-lib";
 
 export default class GamesController {
     private static games = new Map<string, Game>();
@@ -22,14 +22,19 @@ export default class GamesController {
 
         console.log(`[Game Created] Game ID: ${gameId}`);
 
+        const history: HistoryEntry[] = game.chess.getHistory();
+
         return {
             gameId,
-            players: game.chess.players,
             playerIndex: 0,
-            activePlayerIndex: game.chess.getActivePlayerIndex(),
-            chessboardFen: game.chess.getChessboard().toFen(),
-            legalMoves: game.chess.getLegalMoves(),
-            history: game.chess.getHistory(),
+            state: {
+                variant: 0,
+                initialFen: history[0].fen,
+                moves: history.slice(1).map((entry) => ({
+                    from: entry.move?.fromSquare,
+                    to: entry.move?.toSquare,
+                })),
+            },
         };
     }
 
@@ -56,14 +61,19 @@ export default class GamesController {
             console.log(`[Game Started] Game ID: ${gameId}`);
         }
 
+        const history: HistoryEntry[] = game.chess.getHistory();
+
         return {
             gameId,
-            players: game.chess.players,
             playerIndex: game.uids.length - 1,
-            activePlayerIndex: game.chess.getActivePlayerIndex(),
-            chessboardFen: game.chess.getChessboard().toFen(),
-            legalMoves: game.chess.getLegalMoves(),
-            history: game.chess.getHistory(),
+            state: {
+                variant: 0,
+                initialFen: history[0].fen,
+                moves: history.slice(1).map((entry) => ({
+                    from: entry.move?.fromSquare,
+                    to: entry.move?.toSquare,
+                })),
+            },
         };
     }
 
@@ -91,10 +101,7 @@ export default class GamesController {
         game.chess.tryMove(from, to);
 
         const data = {
-            activePlayerIndex: game.chess.getActivePlayerIndex(),
-            chessboardFen: game.chess.getChessboard().toFen(),
-            legalMoves: game.chess.getLegalMoves(),
-            history: game.chess.getHistory(),
+            move: { from, to },
         };
 
         transmit.broadcast(`games/${gameId}`, {
