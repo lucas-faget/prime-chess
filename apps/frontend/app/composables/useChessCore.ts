@@ -18,7 +18,7 @@ export function useChessCore(state: GameState | null = null) {
 
     // Game
     const game = ref<Chess>(initGame(state));
-    const players: Player[] = game.value.players;
+    let players: Player[] = game.value.players;
     const activePlayerIndex = ref<number>(game.value.getActivePlayerIndex());
     const legalMoves = ref<LegalMoves>(game.value.getLegalMoves());
     const canMove = computed<boolean>(() => isActiveMoveTheLast());
@@ -64,6 +64,14 @@ export function useChessCore(state: GameState | null = null) {
                     return chess.new();
             }
         }
+    }
+
+    function loadState(state: GameState) {
+        game.value = initGame(state);
+        players = game.value.players;
+        history.value = game.value.getHistory();
+        board.value = game.value.getChessboard();
+        updateInternalState();
     }
 
     function isActiveMoveTheLast(): boolean {
@@ -170,6 +178,7 @@ export function useChessCore(state: GameState | null = null) {
         columns,
         playerInFrontDirection,
 
+        loadState,
         isLegalMove,
         tryMove,
         cancelLastMove,

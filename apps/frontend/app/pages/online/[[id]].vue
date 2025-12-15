@@ -8,6 +8,7 @@ const {
     columns,
     squares,
     legalMoves,
+    canMove,
     algebraicMoves,
     activeHalfmoveIndex,
     playerInFrontDirection,
@@ -15,14 +16,14 @@ const {
     checkedSquare,
     join,
     tryMove,
+    cancelLastMove,
     spinChessboard,
     goToMove,
     goToFirstMove,
     goToPreviousMove,
     goToNextMove,
     goToLastMove,
-    cancelLastMove,
-} = await useOnlineChess();
+} = useChessOnline();
 
 onMounted(async () => {
     await join(gameId);
@@ -36,9 +37,10 @@ onMounted(async () => {
                 <Chessboard
                     :rows="rows"
                     :columns="columns"
-                    :legal-moves="legalMoves"
                     :squares="squares"
                     :player-in-front-direction="playerInFrontDirection"
+                    :legal-moves="legalMoves"
+                    :can-move="canMove"
                     :active-move="activeMove"
                     :checked-square="checkedSquare"
                     @try-move="tryMove"
