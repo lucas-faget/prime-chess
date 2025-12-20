@@ -3,7 +3,7 @@ import type { Move } from "@primechess/chess-lib";
 import { defineStore } from "pinia";
 
 interface Game {
-    type: string;
+    type: "local" | "online";
     id: string;
     state: GameState;
 }
@@ -11,16 +11,30 @@ interface Game {
 export const useChessStore = defineStore("chess", () => {
     const game = ref<Game | null>(null);
 
-    async function newGame(variant: ChessVariant = ChessVariant.Standard) {
+    function storeGame(
+        type: "local" | "online",
+        options?: {
+            id?: string;
+            variant?: ChessVariant;
+            state?: GameState;
+        },
+    ) {
         game.value = {
-            type: "local",
-            id: crypto.randomUUID(),
-            state: {
-                variant,
+            type,
+            id: options?.id ?? crypto.randomUUID(),
+            state: options?.state ?? {
+                variant: options?.variant ?? ChessVariant.Standard,
                 initialFen: null,
                 moves: [],
             },
         };
+    }
+
+    function storeInitialFen(fen: string) {
+        if (!game.value) return;
+        if (game.value.state.initialFen !== null) return;
+
+        game.value.state.initialFen = fen;
     }
 
     function storeMove(move: Move) {
@@ -32,7 +46,8 @@ export const useChessStore = defineStore("chess", () => {
 
     return {
         game,
-        newGame,
+        storeGame,
+        storeInitialFen,
         storeMove,
     };
 });
