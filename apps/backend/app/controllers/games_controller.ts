@@ -20,7 +20,7 @@ export default class GamesController {
 
         GamesController.games.set(gameId, game);
 
-        console.log(`[Game Created] Game ID: ${gameId}`);
+        console.log(`[Game Created] Game ID: ${gameId}, UID: ${uid}`);
 
         const history: HistoryEntry[] = game.chess.getHistory();
 
@@ -48,24 +48,26 @@ export default class GamesController {
             return { error: "Game not found" };
         }
 
-        if (game.uids.length >= 2) {
-            return { error: "Game is full" };
-        }
-
         if (!game.uids.includes(uid)) {
+            if (game.uids.length >= 2) {
+                return { error: "Game is full" };
+            }
+
             game.uids.push(uid);
             console.log(`[Player Joined] Game ID: ${gameId}, UID: ${uid}`);
-        }
 
-        if (game.uids.length === 2) {
-            console.log(`[Game Started] Game ID: ${gameId}`);
+            if (game.uids.length === 2) {
+                console.log(`[Game Started] Game ID: ${gameId}`);
+            }
+        } else {
+            console.log(`[Player Reconnected] Game ID: ${gameId}, UID: ${uid}`);
         }
 
         const history: HistoryEntry[] = game.chess.getHistory();
 
         return {
             gameId,
-            playerIndex: game.uids.length - 1,
+            playerIndex: game.uids.indexOf(uid),
             state: {
                 variant: 0,
                 initialFen: history[0].fen,
