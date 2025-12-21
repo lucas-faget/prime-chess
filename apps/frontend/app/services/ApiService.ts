@@ -38,7 +38,8 @@ export class ApiService {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to create game");
+            const error = await response.json();
+            throw new Error(error.error);
         }
 
         return await response.json();
@@ -55,7 +56,8 @@ export class ApiService {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to join game");
+            const error = await response.json();
+            throw new Error(error.error);
         }
 
         return await response.json();
@@ -75,7 +77,8 @@ export class ApiService {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to play move");
+            const error = await response.json();
+            throw new Error(error.error);
         }
     }
 

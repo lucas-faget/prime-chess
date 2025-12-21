@@ -6,9 +6,11 @@ import { chess, HistoryEntry } from "@primechess/chess-lib";
 export default class GamesController {
     private static games = new Map<string, Game>();
 
-    public async create({ request }: HttpContext) {
+    public async create({ request, response }: HttpContext) {
         const uid = request.header("x-uid");
-        if (!uid) return;
+        if (!uid) {
+            return response.status(401).send({ error: "Missing UID" });
+        }
 
         const gameId = crypto.randomUUID();
 
@@ -38,19 +40,21 @@ export default class GamesController {
         };
     }
 
-    public async join({ params, request }: HttpContext) {
+    public async join({ params, request, response }: HttpContext) {
         const gameId = params.id;
         const uid = request.header("x-uid");
-        if (!uid) return;
+        if (!uid) {
+            return response.status(401).send({ error: "Missing UID" });
+        }
 
         const game = GamesController.games.get(gameId);
         if (!game) {
-            return { error: "Game not found" };
+            return response.status(404).send({ error: "Game not found" });
         }
 
         if (!game.uids.includes(uid)) {
             if (game.uids.length >= 2) {
-                return { error: "Game is full" };
+                return response.status(403).send({ error: "Game is full" });
             }
 
             game.uids.push(uid);
@@ -79,21 +83,25 @@ export default class GamesController {
         };
     }
 
-    public async move({ params, request }: HttpContext) {
+    public async move({ params, request, response }: HttpContext) {
         const { from, to } = request.only(["from", "to"]);
         const gameId = params.id;
         const uid = request.header("x-uid");
-        if (!uid) return;
+        if (!uid) {
+            return response.status(401).send({ error: "Missing UID" });
+        }
 
         const game = GamesController.games.get(gameId);
-        if (!game) return { error: "Game not found" };
+        if (!game) {
+            return response.status(404).send({ error: "Game not found" });
+        }
 
         if (game.uids.length < 2) {
-            return { error: "Game has not started" };
+            return response.status(409).send({ error: "Game has not started" });
         }
 
         if (game.uids[game.chess.getActivePlayerIndex()] !== uid) {
-            return { error: "Not active player" };
+            return response.status(403).send({ error: "Not your turn" });
         }
 
         if (!game.chess.isLegalMove(from, to)) {
