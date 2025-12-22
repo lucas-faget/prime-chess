@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ChessVariant } from "@primechess/types";
-const { newGame } = useChessStore();
+import { ApiService } from "~/services/ApiService";
+const store = useChessStore();
 
 const visible = ref<boolean>(true);
 const loading = ref<boolean>(false);
 
 const opponents = [
-    { name: "Anybody", icon: "pi-users", type: 0 },
-    { name: "Friend", icon: "pi-face-smile", type: 1 },
-    { name: "Computer", icon: "pi-microchip-ai", type: 2 },
+    { name: "Local", icon: "pi-desktop", type: 0 },
+    { name: "Anybody", icon: "pi-users", type: 1 },
+    { name: "Friend", icon: "pi-face-smile", type: 2 },
+    { name: "Computer", icon: "pi-microchip-ai", type: 3 },
 ];
 
 const variants = [
@@ -24,10 +26,21 @@ const speed = ref(speeds[0]);
 
 const createGame = async (): Promise<void> => {
     loading.value = true;
+    const v: ChessVariant = variant.value?.type ?? ChessVariant.Standard;
 
     try {
-        await newGame(variant?.value?.type);
-        await navigateTo("/local");
+        if (opponent.value?.type === 0) {
+            // Local
+            store.storeGame("local", { variant: v });
+            await navigateTo("/local");
+        } else {
+            // Online
+            const data = await ApiService.createGame();
+            store.storeGame("online", { id: data.gameId, state: data.state });
+            await navigateTo(`online/${data.gameId}`);
+        }
+    } catch (error) {
+        console.error("Failed to create game.", error);
     } finally {
         loading.value = false;
     }

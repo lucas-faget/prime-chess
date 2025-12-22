@@ -176,6 +176,7 @@ export function useChessCore(state: GameState | null = null) {
         squares,
         rows,
         columns,
+        playerInFrontIndex,
         playerInFrontDirection,
 
         loadState,

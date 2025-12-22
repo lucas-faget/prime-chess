@@ -1,7 +1,8 @@
-export default defineNuxtRouteMiddleware(() => {
+export default defineNuxtRouteMiddleware((to) => {
     const store = useChessStore();
+    const gameId: string = to.params.id as string;
 
-    if (!store.game) {
+    if (!gameId && !store.game) {
         return navigateTo("/");
     }
 });

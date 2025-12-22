@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const route = useRoute();
-const id = route.params.id;
-const gameId: string | undefined = Array.isArray(id) ? id[0] : id;
+const gameId: string = route.params.id as string;
 
 const {
     rows,
@@ -14,7 +13,6 @@ const {
     playerInFrontDirection,
     activeMove,
     checkedSquare,
-    join,
     tryMove,
     cancelLastMove,
     spinChessboard,
@@ -23,11 +21,7 @@ const {
     goToPreviousMove,
     goToNextMove,
     goToLastMove,
-} = useChessOnline();
-
-onMounted(async () => {
-    await join(gameId);
-});
+} = useChessOnline(gameId);
 </script>
 
 <template>
