@@ -1,5 +1,5 @@
 import { Transmit } from "@adonisjs/transmit-client";
-import type { GameState } from "@primechess/types";
+import { ChessVariant, type GameState } from "@primechess/types";
 
 export class ApiService {
     private static baseURL = "http://localhost:3333";
@@ -27,7 +27,7 @@ export class ApiService {
         };
     }
 
-    static async createGame(): Promise<{
+    static async createGame(variant: ChessVariant = ChessVariant.Standard): Promise<{
         gameId: string;
         playerIndex: number;
         state: GameState;
@@ -35,6 +35,7 @@ export class ApiService {
         const response = await fetch(`${this.baseURL}/games/create`, {
             method: "POST",
             headers: this.getHeaders(),
+            body: JSON.stringify({ variant }),
         });
 
         if (!response.ok) {

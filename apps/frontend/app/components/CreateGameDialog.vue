@@ -35,7 +35,7 @@ const createGame = async (): Promise<void> => {
             await navigateTo("/local");
         } else {
             // Online
-            const data = await ApiService.createGame();
+            const data = await ApiService.createGame(v);
             store.storeGame("online", { id: data.gameId, state: data.state });
             await navigateTo(`online/${data.gameId}`);
         }

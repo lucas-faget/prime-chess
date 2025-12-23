@@ -12,11 +12,13 @@ export default class GamesController {
             return response.status(401).send({ error: "Missing UID" });
         }
 
+        const { variant } = request.only(["variant"]);
         const gameId = crypto.randomUUID();
 
         const game: Game = {
             id: gameId,
-            chess: chess.new(),
+            variant,
+            chess: variant === 0 ? chess.fischerRandom() : chess.new(),
             uids: [uid],
         };
 
@@ -30,7 +32,7 @@ export default class GamesController {
             gameId,
             playerIndex: 0,
             state: {
-                variant: 0,
+                variant: variant,
                 initialFen: history[0].fen,
                 moves: history.slice(1).map((entry) => ({
                     from: entry.move?.fromSquare,
@@ -41,11 +43,12 @@ export default class GamesController {
     }
 
     public async join({ params, request, response }: HttpContext) {
-        const gameId = params.id;
         const uid = request.header("x-uid");
         if (!uid) {
             return response.status(401).send({ error: "Missing UID" });
         }
+
+        const gameId = params.id;
 
         const game = GamesController.games.get(gameId);
         if (!game) {
@@ -73,7 +76,7 @@ export default class GamesController {
             gameId,
             playerIndex: game.uids.indexOf(uid),
             state: {
-                variant: 0,
+                variant: game.variant,
                 initialFen: history[0].fen,
                 moves: history.slice(1).map((entry) => ({
                     from: entry.move?.fromSquare,
@@ -84,12 +87,13 @@ export default class GamesController {
     }
 
     public async move({ params, request, response }: HttpContext) {
-        const { from, to } = request.only(["from", "to"]);
-        const gameId = params.id;
         const uid = request.header("x-uid");
         if (!uid) {
             return response.status(401).send({ error: "Missing UID" });
         }
+
+        const { from, to } = request.only(["from", "to"]);
+        const gameId = params.id;
 
         const game = GamesController.games.get(gameId);
         if (!game) {
