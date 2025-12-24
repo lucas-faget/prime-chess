@@ -1,7 +1,9 @@
 {
     "extends": "@adonisjs/tsconfig/tsconfig.app.json",
     "compilerOptions": {
-        "rootDir": "./",
-        "outDir": "./build"
+        "outDir": "./build",
+        "paths": {
+            "@primechess/types": ["../../packages/types/index.ts"]
+        }
     }
 }

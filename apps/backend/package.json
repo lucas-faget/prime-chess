@@ -57,6 +57,7 @@
         "@adonisjs/lucid": "^21.8.0",
         "@adonisjs/transmit": "^2.0.2",
         "@primechess/chess-lib": "workspace:*",
+        "@primechess/types": "workspace:*",
         "@vinejs/vine": "^3.0.1",
         "luxon": "^3.7.2",
         "pg": "^8.16.3",

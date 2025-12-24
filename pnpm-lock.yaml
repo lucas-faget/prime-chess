@@ -34,6 +34,9 @@ importers:
             "@primechess/chess-lib":
                 specifier: workspace:*
                 version: link:../../packages/chess-lib
+            "@primechess/types":
+                specifier: workspace:*
+                version: link:../../packages/types
             "@vinejs/vine":
                 specifier: ^3.0.1
                 version: 3.0.1

@@ -1,2 +1,2 @@
-export * from "./ChessVariant";
-export * from "./GameState";
+export * from "./ChessVariant.js";
+export * from "./GameState.js";

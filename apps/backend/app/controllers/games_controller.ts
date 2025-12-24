@@ -2,6 +2,7 @@ import type { HttpContext } from "@adonisjs/core/http";
 import transmit from "@adonisjs/transmit/services/main";
 import { Game } from "../types/Game.js";
 import { chess, HistoryEntry } from "@primechess/chess-lib";
+import { ChessVariant } from "@primechess/types";
 
 export default class GamesController {
     private static games = new Map<string, Game>();
@@ -18,7 +19,7 @@ export default class GamesController {
         const game: Game = {
             id: gameId,
             variant,
-            chess: variant === 0 ? chess.fischerRandom() : chess.new(),
+            chess: variant === ChessVariant.FischerRandom ? chess.fischerRandom() : chess.new(),
             uids: [uid],
         };
 
