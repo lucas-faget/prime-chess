@@ -5,6 +5,11 @@ import Aura from "@primeuix/themes/aura";
 export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
     devtools: { enabled: true },
+    runtimeConfig: {
+        public: {
+            apiBaseUrl: process.env.API_BASE_URL,
+        },
+    },
     css: ["./app/app.css"],
     vite: {
         plugins: [tailwindcss()],

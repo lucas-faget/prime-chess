@@ -2,7 +2,6 @@ import { Transmit } from "@adonisjs/transmit-client";
 import { ChessVariant, type GameState } from "@primechess/types";
 
 export class ApiService {
-    private static baseURL = "http://localhost:3333";
     private static uid: string | null = null;
     private static transmit: Transmit | null = null;
 
@@ -32,7 +31,8 @@ export class ApiService {
         playerIndex: number;
         state: GameState;
     }> {
-        const response = await fetch(`${this.baseURL}/games/create`, {
+        const { $apiBaseUrl } = useNuxtApp();
+        const response = await fetch(`${$apiBaseUrl}/games/create`, {
             method: "POST",
             headers: this.getHeaders(),
             body: JSON.stringify({ variant }),
@@ -51,7 +51,8 @@ export class ApiService {
         playerIndex: number;
         state: GameState;
     }> {
-        const response = await fetch(`${this.baseURL}/games/${gameId}/join`, {
+        const { $apiBaseUrl } = useNuxtApp();
+        const response = await fetch(`${$apiBaseUrl}/games/${gameId}/join`, {
             method: "POST",
             headers: this.getHeaders(),
         });
@@ -71,7 +72,8 @@ export class ApiService {
             to: string;
         },
     ): Promise<void> {
-        const response = await fetch(`${this.baseURL}/games/${gameId}/move`, {
+        const { $apiBaseUrl } = useNuxtApp();
+        const response = await fetch(`${$apiBaseUrl}/games/${gameId}/move`, {
             method: "POST",
             headers: this.getHeaders(),
             body: JSON.stringify(move),
@@ -85,8 +87,9 @@ export class ApiService {
 
     static subscribe(gameId: string, onMove: (data: any) => void): () => void {
         if (!this.transmit) {
+            const { $apiBaseUrl } = useNuxtApp();
             this.transmit = new Transmit({
-                baseUrl: this.baseURL,
+                baseUrl: $apiBaseUrl,
                 uidGenerator: () => this.getOrCreateUID(),
             });
         }
